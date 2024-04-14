@@ -30,5 +30,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="/commonstoolkit"/>
 	<classpathentry kind="src" path="/mathtoolkit"/>
+	<classpathentry kind="src" path="/acousticstoolkit"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
