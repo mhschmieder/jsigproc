@@ -103,8 +103,8 @@ public class HighLowPassFilter extends DigitalFilter {
 
     private boolean                           _bypassed;
     private double                            _fc;
-    ElectronicFilterType              _electronicFilterType;
-    HighLowPassFilterType             _highLowPassFilterType;
+    private ElectronicFilterType              _electronicFilterType;
+    private HighLowPassFilterType             _highLowPassFilterType;
 
     // Declare the angle to the pole (radians), in the z-plane.
     private double                            _w;
@@ -235,19 +235,20 @@ public class HighLowPassFilter extends DigitalFilter {
 
         // Switch from the analog to digital domain for the main calculations.
         //
-        // The sampling frequency must be 96000 Hz to match exactly what is done
-        // in Compass. The pre-warping affects the linearity of high frequencies
-        // so we must respect the Compass sampling frequency.
+        // The sampling frequency should be set in advance to match exactly what
+        // is done in any hardware or software that uses this filter algorithm.
+        // The pre-warping affects the linearity of high frequencies so we must 
+        // respect the set sampling frequency.
         //
-        // The sampling frequency of the filter is independent of the SIM3
-        // sampling frequency, as we are passing the analog frequency to the
+        // The sampling frequency of the filter is independent of the other
+        // sampling frequencies, as we are passing the analog frequency to the
         // filter method in which we want to get the complex response.
         final Complex z = DigitalFilterUtilities
                 .convertFrequencyToZDomain( fAdjusted, samplingFrequencyHz );
         final Complex zMinusOne = z.reciprocal();
         final Complex zMinusTwo = MathUtilities.sqrComplex( zMinusOne );
 
-        // The biquad calculation code is ported and adapted from Compass code.
+        // The biquad calculation code is ported and adapted from textbook examples.
         final Complex h = getBiQuadResult( zMinusOne, zMinusTwo );
 
         // Return the High/Low Pass filter value at the given frequency.
