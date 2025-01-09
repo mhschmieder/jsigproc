@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020, 2024 Mark Schmieder
+ * Copyright (c) 2020, 2025 Mark Schmieder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,5 +40,4 @@ public interface AcousticalFilter {
 
     // Return the filter value at a given frequency (in Hertz).
     Complex getH( final double f );
-
 }
