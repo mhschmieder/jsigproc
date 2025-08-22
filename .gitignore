@@ -23,6 +23,9 @@
 hs_err_pid*
 /target/
 
+# macOS security breach vulnerability files #
+*.DS_Store
+
 # Eclipse
 .project
 .classpath
