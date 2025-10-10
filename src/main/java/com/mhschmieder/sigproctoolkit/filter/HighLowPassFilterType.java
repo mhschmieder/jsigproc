@@ -30,9 +30,9 @@
  */
 package com.mhschmieder.sigproctoolkit.filter;
 
-import java.util.Locale;
-
 import com.mhschmieder.sigproctoolkit.dsp.DigitalFilterUtilities;
+
+import java.util.Locale;
 
 public enum HighLowPassFilterType {
     SECOND_ORDER_HIGH_PASS,

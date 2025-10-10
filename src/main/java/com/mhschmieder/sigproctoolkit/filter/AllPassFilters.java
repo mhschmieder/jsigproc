@@ -30,10 +30,9 @@
  */
 package com.mhschmieder.sigproctoolkit.filter;
 
+import com.mhschmieder.commonstoolkit.lang.NumberUtilities;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
-
-import com.mhschmieder.commonstoolkit.lang.NumberUtilities;
 
 public class AllPassFilters implements AcousticalFilter {
 

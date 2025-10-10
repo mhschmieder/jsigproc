@@ -30,12 +30,11 @@
  */
 package com.mhschmieder.sigproctoolkit.filter;
 
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.util.FastMath;
-
 import com.mhschmieder.mathtoolkit.MathConstants;
 import com.mhschmieder.mathtoolkit.MathUtilities;
 import com.mhschmieder.sigproctoolkit.dsp.DigitalFilterUtilities;
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.util.FastMath;
 
 // This class models a custom High/Low Pass Filter (cf. Robert Bristow-Johnson's
 // BiquadFilterCoefficients.rtf for details on formulae and coefficients).

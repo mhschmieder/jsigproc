@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  *
  * Copyright (c) 2020, 2024 Mark Schmieder
@@ -30,26 +30,33 @@
  */
 package com.mhschmieder.sigproctoolkit.filter;
 
-public enum ElectronicFilterType {
-    HIGH_LOW_PASS, LOW_PASS, HIGH_PASS;
+import com.mhschmieder.commonstoolkit.lang.EnumUtilities;
+import com.mhschmieder.commonstoolkit.lang.Labeled;
+
+public enum ElectronicFilterType implements Labeled< ElectronicFilterType > {
+    HIGH_LOW_PASS( "High/Low Pass" ),
+    LOW_PASS( "High Pass" ),
+    HIGH_PASS( "Low Pass" );
+
+    private String label;
+
+    ElectronicFilterType( final String pLabel ) {
+        label = pLabel;
+    }
+
+    @Override
+    public final String label() {
+        return label;
+    }
+
+    @Override
+    public ElectronicFilterType valueOfLabel(final String text ) {
+        return ( ElectronicFilterType ) EnumUtilities.getLabeledEnumFromLabel(
+                text, values() );
+    }
 
     public static ElectronicFilterType defaultValue() {
         return HIGH_LOW_PASS;
-    }
-
-    public final String toPresentationString() {
-        switch ( this ) {
-        case HIGH_LOW_PASS:
-            return "High/Low Pass";
-        case LOW_PASS:
-            return "Low Pass";
-        case HIGH_PASS:
-            return "High Pass";
-        default:
-            final String errMessage = "Unexpected "
-                    + this.getClass().getSimpleName() + " " + this;
-            throw new IllegalArgumentException( errMessage );
-        }
     }
 
     @Override
@@ -58,6 +65,8 @@ public enum ElectronicFilterType {
         //  representation, which is a problem for backward-compatibility with
         //  XML parsers. Thus, we need to strip the underscores and replace them
         //  with spaces, to behave like Java 5.
+        // TODO: Check whether this now needs to forward to label() instead,
+        //  especially once using enum-templated XComboBox vs. String-based.
         final String value = super.toString();
         return value.replaceAll( "_", " " );
     }

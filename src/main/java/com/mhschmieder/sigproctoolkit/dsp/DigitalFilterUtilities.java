@@ -30,11 +30,10 @@
  */
 package com.mhschmieder.sigproctoolkit.dsp;
 
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.util.FastMath;
-
 import com.mhschmieder.commonstoolkit.lang.NumberUtilities;
 import com.mhschmieder.mathtoolkit.MathConstants;
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * General utilities for working with frequency signals in the digital domain.
