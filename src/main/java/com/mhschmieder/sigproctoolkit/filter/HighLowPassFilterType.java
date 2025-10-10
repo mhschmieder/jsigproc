@@ -1,7 +1,7 @@
-/**
+/*
  * MIT License
  *
- * Copyright (c) 2020, 2024 Mark Schmieder
+ * Copyright (c) 2020, 2025 Mark Schmieder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,10 @@ import com.mhschmieder.sigproctoolkit.dsp.DigitalFilterUtilities;
 
 import java.util.Locale;
 
+/**
+ * TODO: Convert to using Labeled interface, if we can find a way to deal with
+ *  the few multi-cast strings that are due to a lineage of name changes.
+ */
 public enum HighLowPassFilterType {
     SECOND_ORDER_HIGH_PASS,
     ELLIPTICAL_HIGH_PASS,
