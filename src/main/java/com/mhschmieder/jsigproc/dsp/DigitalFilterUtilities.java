@@ -21,16 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is part of the SigprocToolkit Library
+ * This file is part of the JSigproc Library
  *
  * You should have received a copy of the MIT License along with the
- * SigprocToolkit Library. If not, see <https://opensource.org/licenses/MIT>.
+ * JSigproc Library. If not, see <https://opensource.org/licenses/MIT>.
  *
- * Project: https://github.com/mhschmieder/sigproctoolkit
+ * Project: https://github.com/mhschmieder/jsigproc
  */
-package com.mhschmieder.sigproctoolkit.dsp;
+package com.mhschmieder.jsigproc.dsp;
 
-import com.mhschmieder.commonstoolkit.lang.NumberUtilities;
+import com.mhschmieder.jcommons.lang.NumberUtilities;
 import com.mhschmieder.mathtoolkit.MathConstants;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;

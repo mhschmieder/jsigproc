@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mhschmieder</groupId>
-    <artifactId>sigproctoolkit</artifactId>
+    <artifactId>jsigproc</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>sigproctoolkit</name>
-    <url>https://github.com/mhschmieder/sigproctoolkit</url>
+    <name>jsigproc</name>
+    <url>https://github.com/mhschmieder/jsigproc</url>
     <description>Signal processing and DSP classes for Java.</description>
 
     <licenses>
@@ -21,9 +21,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/mhschmieder/sigproctoolkit</url>
-        <connection>scm:git:git://github.com/mhschmieder/sigproctoolkit.git</connection>
-        <developerConnection>scm:git:git@github.com:mhschmieder/sigproctoolkit.git</developerConnection>
+        <url>https://github.com/mhschmieder/jsigproc</url>
+        <connection>scm:git:git://github.com/mhschmieder/jsigproc.git</connection>
+        <developerConnection>scm:git:git@github.com:mhschmieder/jsigproc.git</developerConnection>
     </scm>
 
     <developers>
@@ -41,7 +41,7 @@
     <dependencies>
         <dependency>
             <groupId>com.mhschmieder</groupId>
-            <artifactId>commonstoolkit</artifactId>
+            <artifactId>jcommons</artifactId>
             <version>0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020, 2024 Mark Schmieder
+ * Copyright (c) 2020, 2025 Mark Schmieder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is part of the SigprocToolkit Library
+ * This file is part of the JSigproc Library
  *
  * You should have received a copy of the MIT License along with the
- * SigprocToolkit Library. If not, see <https://opensource.org/licenses/MIT>.
+ * JSigproc Library. If not, see <https://opensource.org/licenses/MIT>.
  *
- * Project: https://github.com/mhschmieder/sigproctoolkit
+ * Project: https://github.com/mhschmieder/jsigproc
  */
-package com.mhschmieder.sigproctoolkit.dsp;
+package com.mhschmieder.jsigproc.filter;
 
-public class DspConstants {
-    
-    /**
-     * Default sampling frequency for initializing to a likely real world value.
-     * <p>
-     * Many digital filter algorithms are based on ratios of sampling frequency.
-     */
-    public static final double DEFAULT_SAMPLING_FREQUENCY_HZ = 96000.0d;
+import org.apache.commons.math3.complex.Complex;
 
-    /**
-     * The default constructor is disabled, as this is a static constants class.
-     */
-    public DspConstants() {}
+/**
+ * The <code>AcousticalFilter</code> interface is an interface for setting and
+ * getting acoustical filter values.
+ */
+public interface AcousticalFilter {
 
+    // Return the filter value at a given frequency (in Hertz).
+    Complex getH( final double f );
 }
