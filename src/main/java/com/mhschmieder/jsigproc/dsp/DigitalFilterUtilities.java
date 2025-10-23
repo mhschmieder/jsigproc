@@ -31,7 +31,7 @@
 package com.mhschmieder.jsigproc.dsp;
 
 import com.mhschmieder.jcommons.lang.NumberUtilities;
-import com.mhschmieder.mathtoolkit.MathConstants;
+import com.mhschmieder.jmath.MathConstants;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
 
