@@ -30,9 +30,9 @@
  */
 package com.mhschmieder.jsigproc.filter;
 
-import com.mhschmieder.jsigproc.dsp.DigitalFilterUtilities;
 import com.mhschmieder.jmath.MathConstants;
 import com.mhschmieder.jmath.MathUtilities;
+import com.mhschmieder.jsigproc.dsp.DigitalFilterUtilities;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
 
