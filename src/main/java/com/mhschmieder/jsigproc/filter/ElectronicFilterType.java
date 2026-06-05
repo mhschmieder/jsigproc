@@ -38,14 +38,14 @@ public enum ElectronicFilterType implements Labeled< ElectronicFilterType > {
     LOW_PASS( "High Pass" ),
     HIGH_PASS( "Low Pass" );
 
-    private String label;
+    private final String label;
 
     ElectronicFilterType( final String pLabel ) {
         label = pLabel;
     }
 
     @Override
-    public final String label() {
+    public String label() {
         return label;
     }
 
@@ -55,19 +55,15 @@ public enum ElectronicFilterType implements Labeled< ElectronicFilterType > {
                 text, values() );
     }
 
-    public static ElectronicFilterType defaultValue() {
-        return HIGH_LOW_PASS;
+    @Override
+    public String toString() {
+        // NOTE: This override takes care of displaying the current choice in
+        //  its custom label form when a Combo Box is hosted by a Table Cell. It
+        //  also addresses an issue with the Jackson parser if in a JSON file.
+        return label();
     }
 
-    @Override
-    public final String toString() {
-        // NOTE: As of Java 6, enums include the underscore in their string
-        //  representation, which is a problem for backward-compatibility with
-        //  XML parsers. Thus, we need to strip the underscores and replace them
-        //  with spaces, to behave like Java 5.
-        // TODO: Check whether this now needs to forward to label() instead,
-        //  especially once using enum-templated XComboBox vs. String-based.
-        final String value = super.toString();
-        return value.replaceAll( "_", " " );
+    public static ElectronicFilterType defaultValue() {
+        return HIGH_LOW_PASS;
     }
 }
