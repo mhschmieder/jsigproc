@@ -21,18 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is part of the JSigproc Library
+ * This file is part of the jsigproc Library
  *
- * You should have received a copy of the MIT License along with the
- * JSigproc Library. If not, see <https://opensource.org/licenses/MIT>.
+ * You should have received a copy of the MIT License along with the jsigproc
+ * Library. If not, see <https://opensource.org/licenses/MIT>.
  *
  * Project: https://github.com/mhschmieder/jsigproc
  */
 package com.mhschmieder.jsigproc.filter;
 
-import com.mhschmieder.jacoustics.FrequencySignalUtilities;
 import com.mhschmieder.jmath.MathConstants;
 import com.mhschmieder.jmath.MathUtilities;
+import com.mhschmieder.jphysics.acoustics.FrequencySignalUtilities;
 import com.mhschmieder.jsigproc.dsp.DigitalFilterUtilities;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
@@ -89,7 +89,10 @@ public final class AllPassFilter extends DigitalFilter {
     //  to guarantee that the source object is never modified by the new target
     //  object created here.
     public AllPassFilter( final AllPassFilter allPassFilter ) {
-        this( allPassFilter.isBypassed(), allPassFilter.getF(), allPassFilter.getO() );
+        this(
+                allPassFilter.isBypassed(),
+                allPassFilter.getF(),
+                allPassFilter.getO() );
     }
 
     // NOTE: Cloning is disabled as it is dangerous; use the copy constructor
@@ -129,7 +132,8 @@ public final class AllPassFilter extends DigitalFilter {
         final Complex zSquared = MathUtilities.sqrComplex( z );
 
         // Get the complex frequency variable in the s-plane.
-        final Complex s = FrequencySignalUtilities.convertFrequencyToSDomain( fAdjusted );
+        final Complex s = FrequencySignalUtilities.convertFrequencyToSDomain(
+                fAdjusted );
 
         // Theta is the angle to the pole (radians), in the z-plane.
         final double theta = DigitalFilterUtilities
@@ -226,7 +230,8 @@ public final class AllPassFilter extends DigitalFilter {
         //  part is real and which part is imaginary vs.
         //  convertFrequencyToSDomain()
         _f = f;
-        _w = new Complex( FrequencySignalUtilities.getAngularFrequencyRadians( f ), 0.0d );
+        _w = new Complex( FrequencySignalUtilities
+                .getAngularFrequencyRadians( f ), 0.0d );
     }
 
     public void setO( final double o ) {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020, 2026 Mark Schmieder. All rights reserved.
+ * Copyright (c) 2026 Mark Schmieder. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is part of the jsigproc Library
+ * This file is part of the jmath Library
  *
- * You should have received a copy of the MIT License along with the jsigproc
+ * You should have received a copy of the MIT License along with the jmath
  * Library. If not, see <https://opensource.org/licenses/MIT>.
  *
- * Project: https://github.com/mhschmieder/jsigproc
+ * Project: https://github.com/mhschmieder/jmath
  */
-package com.mhschmieder.jsigproc.filter;
-
-import org.apache.commons.math3.complex.Complex;
-
-/**
- * The <code>AcousticalFilter</code> interface is an interface for setting and
- * getting acoustical filter values.
- */
-public interface AcousticalFilter {
-
-    // Return the filter value at a given frequency (in Hertz).
-    Complex getH( final double f );
+module jsigproc {
+    exports com.mhschmieder.jsigproc;
+    exports com.mhschmieder.jsigproc.dsp;
+    exports com.mhschmieder.jsigproc.filter;
+    requires commons.math3;
+    requires jcommons;
+    requires jmath;
+    requires jphysics;
 }
