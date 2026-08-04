@@ -44,15 +44,8 @@ public enum ElectronicFilterType implements Labeled< ElectronicFilterType > {
         label = pLabel;
     }
 
-    @Override
-    public String label() {
-        return label;
-    }
-
-    @Override
-    public ElectronicFilterType valueOfLabel(final String text ) {
-        return ( ElectronicFilterType ) EnumUtilities.getLabeledEnumFromLabel(
-                text, values() );
+    public static ElectronicFilterType defaultValue() {
+        return HIGH_LOW_PASS;
     }
 
     @Override
@@ -63,7 +56,15 @@ public enum ElectronicFilterType implements Labeled< ElectronicFilterType > {
         return label();
     }
 
-    public static ElectronicFilterType defaultValue() {
-        return HIGH_LOW_PASS;
+    @Override
+    public String label() {
+        return label;
+    }
+
+    @Override
+    public ElectronicFilterType valueOfLabel( final String text ) {
+        return ( ElectronicFilterType ) EnumUtilities.getLabeledEnumFromLabel(
+                text,
+                values() );
     }
 }

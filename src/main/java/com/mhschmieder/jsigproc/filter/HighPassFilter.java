@@ -32,12 +32,11 @@ package com.mhschmieder.jsigproc.filter;
 
 public final class HighPassFilter extends HighLowPassFilter {
 
+    // Default for which High Pass filter type to use.
+    public static final HighLowPassFilterType FILTER_TYPE_HIGH_PASS_DEFAULT
+            = HighLowPassFilterType.SECOND_ORDER_HIGH_PASS;
     // High Pass frequency, range 16 Hz to 10 kHz (40 Hz default).
     private static final double FC_HIGH_PASS_DEFAULT = 40d;
-
-    // Default for which High Pass filter type to use.
-    public static final HighLowPassFilterType FILTER_TYPE_HIGH_PASS_DEFAULT =
-                                                                            HighLowPassFilterType.SECOND_ORDER_HIGH_PASS;
 
     // ///////////////////////////////////////////////////////////////
     // Constructors
@@ -47,10 +46,10 @@ public final class HighPassFilter extends HighLowPassFilter {
         this( FC_HIGH_PASS_DEFAULT );
     }
 
-    // This is the default constructor; it sets all instance variables to
-    // default values, but sets a supplied bypassed status in advance.
-    public HighPassFilter( final boolean highPassBypassed ) {
-        this( highPassBypassed, FC_HIGH_PASS_DEFAULT, FILTER_TYPE_HIGH_PASS_DEFAULT );
+    // This is the preferred default constructor; it sets all instance variables
+    // to default values, except for frequency.
+    private HighPassFilter( final double fc ) {
+        this( BYPASSED_DEFAULT, fc, FILTER_TYPE_HIGH_PASS_DEFAULT );
     }
 
     // This is the preferred specific constructor, when all initial values are
@@ -58,13 +57,18 @@ public final class HighPassFilter extends HighLowPassFilter {
     public HighPassFilter( final boolean highPassBypassed,
                            final double fc,
                            final HighLowPassFilterType highLowPassFilterType ) {
-        super( highPassBypassed, fc, ElectronicFilterType.HIGH_PASS, highLowPassFilterType );
+        super( highPassBypassed,
+               fc,
+               ElectronicFilterType.HIGH_PASS,
+               highLowPassFilterType );
     }
 
-    // This is the preferred default constructor; it sets all instance variables
-    // to default values, except for frequency.
-    private HighPassFilter( final double fc ) {
-        this( BYPASSED_DEFAULT, fc, FILTER_TYPE_HIGH_PASS_DEFAULT );
+    // This is the default constructor; it sets all instance variables to
+    // default values, but sets a supplied bypassed status in advance.
+    public HighPassFilter( final boolean highPassBypassed ) {
+        this( highPassBypassed,
+              FC_HIGH_PASS_DEFAULT,
+              FILTER_TYPE_HIGH_PASS_DEFAULT );
     }
 
     // NOTE: This is the copy constructor, and is offered in place of clone()
@@ -80,9 +84,12 @@ public final class HighPassFilter extends HighLowPassFilter {
     // altered from their default state.
     @Override
     public boolean isNonDefaultEqMode() {
-        return ( isBypassed() != BYPASSED_DEFAULT ) || ( getFc() != FC_HIGH_PASS_DEFAULT )
-                || ( getElectronicFilterType() != ElectronicFilterType.HIGH_PASS )
-                || ( getHighLowPassFilterType() != FILTER_TYPE_HIGH_PASS_DEFAULT );
+        return ( isBypassed() != BYPASSED_DEFAULT ) || ( getFc()
+                                                         != FC_HIGH_PASS_DEFAULT )
+               || ( getElectronicFilterType()
+                    != ElectronicFilterType.HIGH_PASS ) || (
+                       getHighLowPassFilterType()
+                       != FILTER_TYPE_HIGH_PASS_DEFAULT );
     }
 
     // Default pseudo-constructor

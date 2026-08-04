@@ -33,7 +33,7 @@ package com.mhschmieder.jsigproc.filter;
 import com.mhschmieder.jsigproc.dsp.DspConstants;
 
 public abstract class DigitalFilter implements AcousticalFilter {
-    
+
     // The sampling frequency to use for pre-warping in filter algorithms.
     protected double samplingFrequencyHz;
 
@@ -48,7 +48,7 @@ public abstract class DigitalFilter implements AcousticalFilter {
     public double getSamplingFrequencyHz() {
         return samplingFrequencyHz;
     }
-    
+
     public void setSamplingFrequencyHz( final double pSamplingFrequencyHz ) {
         samplingFrequencyHz = pSamplingFrequencyHz;
     }

@@ -33,8 +33,8 @@ package com.mhschmieder.jsigproc;
 import org.apache.commons.math3.complex.Complex;
 
 /**
- * The <code>Processing</code> interface is an interface for setting and
- * getting processing values. It is more audio-focused than AcousticalFilter.
+ * The <code>Processing</code> interface is an interface for setting and getting
+ * processing values. It is more audio-focused than AcousticalFilter.
  */
 public interface Processing {
 
@@ -62,11 +62,12 @@ public interface Processing {
     /**
      * Return the filter values at all given frequencies (in Hertz).
      *
-     * @param numberOfBins
-     *            The number of bins in the list of given frequencies
-     * @param calculateAllEnabledFiltersOverride
-     *            Flag for whether we override other criteria as long as a
-     *            specific low-level filter isn't bypassed
+     * @param numberOfBins                       The number of bins in the list
+     *                                           of given frequencies
+     * @param calculateAllEnabledFiltersOverride Flag for whether we override
+     *                                           other criteria as long as a
+     *                                           specific low-level filter isn't
+     *                                           bypassed
      * @return The Complex amplitude/phase filter values at all given
      *         frequencies
      */
@@ -76,12 +77,14 @@ public interface Processing {
     /**
      * Return the filter value at a given frequency (in Hertz).
      *
-     * @param f
-     *            The center band frequency for the filter calculation
-     * @param calculateAllEnabledFiltersOverride
-     *            Flag for whether we override other criteria as long as a
-     *            specific low-level filter isn't bypassed
+     * @param f                                  The center band frequency for
+     *                                           the filter calculation
+     * @param calculateAllEnabledFiltersOverride Flag for whether we override
+     *                                           other criteria as long as a
+     *                                           specific low-level filter isn't
+     *                                           bypassed
      * @return The Complex amplitude/phase filter value at the given frequency
      */
-    Complex getH( final double f, final boolean calculateAllEnabledFiltersOverride );
+    Complex getH( final double f,
+                  final boolean calculateAllEnabledFiltersOverride );
 }

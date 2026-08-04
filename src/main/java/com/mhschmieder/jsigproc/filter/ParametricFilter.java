@@ -50,37 +50,37 @@ public final class ParametricFilter extends DigitalFilter {
     private static final boolean BYPASSED_DEFAULT = false;
 
     // Center frequency, range 20Hz to 20000Hz
-    private static final double  F_DEFAULT        = 1000d;
+    private static final double F_DEFAULT = 1000d;
 
     // Bandwidth, range 0.1 to 1.1 octave
-    private static final double  O_DEFAULT        = 1.0d;
+    private static final double O_DEFAULT = 1.0d;
 
     // Cut/boost (gain), range -15dB to +15dB
-    private static final double  C_DEFAULT        = 0.0d;
+    private static final double C_DEFAULT = 0.0d;
 
-    private boolean              _bypassed;
-    private double               _f;
-    private double               _o;
-    private double               _c;
+    private boolean _bypassed;
+    private double _f;
+    private double _o;
+    private double _c;
 
     // Declare equation domain parameters (computed from f/o/c, not
     // user-specified).
     // NOTE: We take the absolute value of the gain before logging it, to
     //  compensate for the equation flip for H in the ParametricFilters class.
-    private Complex              _w;
-    private Complex              _q;
-    private Complex              _g;
+    private Complex _w;
+    private Complex _q;
+    private Complex _g;
 
     // Declare flag for whether or not to flip the frequency response result.
-    private boolean              _invertH         = false;
+    private boolean _invertH = false;
 
     // Pre-cached parametric coefficients.
-    private Complex              _a0              = Complex.ONE;
-    private Complex              _a1              = Complex.ONE;
-    private Complex              _a2              = Complex.ONE;
-    private Complex              _b0              = Complex.ONE;
-    private Complex              _b1              = Complex.ONE;
-    private Complex              _b2              = Complex.ONE;
+    private Complex _a0 = Complex.ONE;
+    private Complex _a1 = Complex.ONE;
+    private Complex _a2 = Complex.ONE;
+    private Complex _b0 = Complex.ONE;
+    private Complex _b1 = Complex.ONE;
+    private Complex _b2 = Complex.ONE;
 
     // This is the preferred default constructor for a single filter; it sets
     // all instance variables to default values.
@@ -101,7 +101,7 @@ public final class ParametricFilter extends DigitalFilter {
                               final double c ) {
         // Always call the superclass constructor first!
         super();
-        
+
         _bypassed = bypassed;
         _f = f;
         _o = o;
@@ -111,216 +111,26 @@ public final class ParametricFilter extends DigitalFilter {
         // TODO: Find out why the opposite convention is used here for which
         //  part is real and which part is imaginary vs.
         //  convertFrequencyToSDomain()
-        _w = new Complex( FrequencySignalUtilities.getAngularFrequencyRadians( f ), 0.0d );
-        _q = new Complex( FrequencySignalUtilities.convertBandwidthToQ( o ), 0.0d );
-        _g = new Complex( FrequencySignalUtilities.getVoltageRatio( FastMath.abs( c ) ), 0.0d );
+        _w
+                =
+                new Complex( FrequencySignalUtilities.getAngularFrequencyRadians(
+                f ), 0.0d );
+        _q = new Complex( FrequencySignalUtilities.convertBandwidthToQ( o ),
+                          0.0d );
+        _g
+                = new Complex( FrequencySignalUtilities.getVoltageRatio(
+                FastMath.abs( c ) ), 0.0d );
         _invertH = ( c < 0f );
 
         // Update the equation parameters any time the base values change.
         calculateEqCoefficients();
     }
 
-    // NOTE: This is the copy constructor, and is offered in place of clone()
-    //  to guarantee that the source object is never modified by the new target
-    //  object created here.
-    public ParametricFilter( final ParametricFilter parametricFilter ) {
-        this( parametricFilter.isBypassed(),
-              parametricFilter.getF(),
-              parametricFilter.getO(),
-              parametricFilter.getC() );
-    }
-
-    // NOTE: Cloning is disabled as it is dangerous; use the copy constructor
-    //  instead.
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
-    }
-
-    public double getC() {
-        return _c;
-    }
-
-    public double getF() {
-        return _f;
-    }
-
-    // This instance method returns the Parametric Filter value at a given
-    // frequency (in Hertz), using the stored current parameters.
-    @Override
-    public Complex getH( final double f ) {
-        if ( _bypassed ) {
-            return Complex.ONE;
-        }
-
-        // The sampling frequency should be set in advance to match exactly what
-        // is done in any hardware or software that uses this filter algorithm.
-        // The pre-warping affects the linearity of high frequencies so we must 
-        // respect the set sampling frequency.
-        //
-        // The sampling frequency of the filter is independent of the other
-        // sampling frequencies, as we are passing the analog frequency to the
-        // filter method in which we want to get the complex response.
-        Complex h = Complex.ONE;
-
-        // If f == 0 we have divisions by 0 and therefore NaNs. Avoid it.
-        final double fAdjusted = FastMath.max( f, MathConstants.EPSILON_SMALL );
-
-        final Complex z = DigitalFilterUtilities
-                .convertFrequencyToZDomain( fAdjusted, samplingFrequencyHz );
-        final Complex zSquared = MathUtilities.sqrComplex( z );
-
-        final Complex d0 = _a0;
-        final Complex d1 = _a1.divide( z );
-        final Complex d2 = _a2.divide( zSquared );
-        final Complex denominator = d0.add( d1 ).add( d2 );
-
-        final Complex n0 = _b0;
-        final Complex n1 = _b1.divide( z );
-        final Complex n2 = _b2.divide( zSquared );
-        final Complex numerator = n0.add( n1 ).add( n2 );
-
-        // NOTE: Avoid divide by zero exceptions!
-        if ( Complex.ZERO.equals( denominator ) ) {
-            return Complex.ONE;
-        }
-
-        // Result = numerator / denominator
-        h = numerator.divide( denominator );
-
-        // Return the parametric filter value at the given frequency.
-        // NOTE: For now, we are returning the conjugate instead. This takes
-        //  care of sign problems in the delay time in some implementations.
-        return h.conjugate();
-    }
-
-    public double getO() {
-        return _o;
-    }
-
-    public boolean isActiveEqMode() {
-        // Iterate through the individual parametric filters values, and if any
-        // of them are non-zero, activate the EQ Mode.
-        boolean activeEqMode = false;
-
-        if ( !_bypassed ) {
-            // Only check for non-unity gain within a reasonable precision.
-            // TODO: Review this comparison and make it a generic math utility.
-            final float fuzzyC = ( float ) _c;
-            activeEqMode |= ( ( fuzzyC <= -0.001f ) || ( fuzzyC >= 0.001f ) );
-        }
-
-        return activeEqMode;
-    }
-
-    public boolean isBypassed() {
-        return _bypassed;
-    }
-
-    public boolean isEqBoostMode() {
-        // Iterate through the individual parametric filters values, and if any
-        // of them are positive non-zero, activate the EQ Boost Mode.
-        boolean eqBoostMode = false;
-
-        if ( !_bypassed ) {
-            // Only check for positive non-unity gain within reasonable
-            // precision.
-            // TODO: Review this comparison and make it a generic math utility.
-            final float fuzzyC = ( float ) _c;
-            eqBoostMode |= ( fuzzyC >= 0.001f );
-        }
-
-        return eqBoostMode;
-    }
-
-    // This method detects whether any of the filter parameters have been
-    // altered from their default state.
-    // NOTE: Most uses of Parametric Filters will result in an initially
-    //  constructed filter already being at non-default state, so maybe we should
-    //  compare against initial state?
-    public boolean isNonDefaultEqMode() {
-        return ( isBypassed() != BYPASSED_DEFAULT ) || ( getF() != F_DEFAULT )
-                || ( getO() != O_DEFAULT ) || ( getC() != C_DEFAULT );
-    }
-
-    // Default pseudo-constructor.
-    public void reset() {
-        setParametricFilter( BYPASSED_DEFAULT, F_DEFAULT, O_DEFAULT, C_DEFAULT );
-    }
-
-    public void setBypassed( final boolean bypassed ) {
-        _bypassed = bypassed;
-    }
-
-    public void setC( final double c, final boolean updateEquationParameters ) {
-        // Set the gain (cut/boost) and simultaneously compute the associated
-        // equation domain parameter "G" (for tight loop efficiency).
-        // NOTE: We take the absolute value of the gain before logging it, to
-        //  compensate for the equation inversion for H.
-        _c = c;
-        _g = new Complex( FrequencySignalUtilities.getVoltageRatio( FastMath.abs( c ) ), 0.0d );
-        _invertH = ( c < 0.0d );
-
-        // Update the equation parameters any time the base values change.
-        if ( updateEquationParameters ) {
-            calculateEqCoefficients();
-        }
-    }
-
-    public void setF( final double f, final boolean updateEquationParameters ) {
-        // Set the center frequency and simultaneously compute the associated
-        // equation domain parameter "W" (for tight loop efficiency).
-        // TODO: Find out why the opposite convention is used here for which
-        //  part is real and which part is imaginary vs. the
-        //  convertFrequencyToSDomain() method.
-        _f = f;
-        _w = new Complex( FrequencySignalUtilities.getAngularFrequencyRadians( f ), 0.0d );
-
-        // Update the equation parameters any time the base values change.
-        if ( updateEquationParameters ) {
-            calculateEqCoefficients();
-        }
-    }
-
-    public void setO( final double o, final boolean updateEquationParameters ) {
-        // Set the octaves and simultaneously compute the associated equation
-        // domain parameter "Q" (for tight loop efficiency).
-        _o = o;
-        _q = new Complex( FrequencySignalUtilities.convertBandwidthToQ( o ), 0.0d );
-
-        // Update the equation parameters any time the base values change.
-        if ( updateEquationParameters ) {
-            calculateEqCoefficients();
-        }
-    }
-
-    // Fully qualified pseudo-constructor.
-    void setParametricFilter( final boolean bypassed,
-                              final double f,
-                              final double o,
-                              final double c ) {
-        setBypassed( bypassed );
-        setF( f, false );
-        setO( o, false );
-        setC( c, false );
-
-        // Update the equation parameters any time the base values change.
-        calculateEqCoefficients();
-    }
-
-    // Pseudo-copy constructor.
-    public void setParametricFilter( final ParametricFilter parametricFilter ) {
-        setParametricFilter( parametricFilter.isBypassed(),
-                             parametricFilter.getF(),
-                             parametricFilter.getO(),
-                             parametricFilter.getC() );
-    }
-
     // TODO: Enforce this method on all filters via an interface.
     public void calculateEqCoefficients() {
         // Theta is the angle to the pole frequency (radians), in the z-plane.
-        final double theta = DigitalFilterUtilities
-                .getPoleAngleRadians( _f, samplingFrequencyHz );
+        final double theta = DigitalFilterUtilities.getPoleAngleRadians( _f,
+                                                                         samplingFrequencyHz );
 
         final double G = _g.getReal();
         final double Q = _q.getReal();
@@ -360,5 +170,215 @@ public final class ParametricFilter extends DigitalFilter {
             _a1 = new Complex( B1 / B0 );
             _a2 = new Complex( B2 / B0 );
         }
+    }
+
+    // NOTE: This is the copy constructor, and is offered in place of clone()
+    //  to guarantee that the source object is never modified by the new target
+    //  object created here.
+    public ParametricFilter( final ParametricFilter parametricFilter ) {
+        this( parametricFilter.isBypassed(),
+              parametricFilter.getF(),
+              parametricFilter.getO(),
+              parametricFilter.getC() );
+    }
+
+    public double getC() {
+        return _c;
+    }
+
+    public double getF() {
+        return _f;
+    }
+
+    public double getO() {
+        return _o;
+    }
+
+    public boolean isBypassed() {
+        return _bypassed;
+    }
+
+    public void setBypassed( final boolean bypassed ) {
+        _bypassed = bypassed;
+    }
+
+    // NOTE: Cloning is disabled as it is dangerous; use the copy constructor
+    //  instead.
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
+
+    // This instance method returns the Parametric Filter value at a given
+    // frequency (in Hertz), using the stored current parameters.
+    @Override
+    public Complex getH( final double f ) {
+        if ( _bypassed ) {
+            return Complex.ONE;
+        }
+
+        // The sampling frequency should be set in advance to match exactly what
+        // is done in any hardware or software that uses this filter algorithm.
+        // The pre-warping affects the linearity of high frequencies so we must
+        // respect the set sampling frequency.
+        //
+        // The sampling frequency of the filter is independent of the other
+        // sampling frequencies, as we are passing the analog frequency to the
+        // filter method in which we want to get the complex response.
+        Complex h = Complex.ONE;
+
+        // If f == 0 we have divisions by 0 and therefore NaNs. Avoid it.
+        final double fAdjusted = FastMath.max( f, MathConstants.EPSILON_SMALL );
+
+        final Complex z = DigitalFilterUtilities.convertFrequencyToZDomain(
+                fAdjusted,
+                samplingFrequencyHz );
+        final Complex zSquared = MathUtilities.sqrComplex( z );
+
+        final Complex d0 = _a0;
+        final Complex d1 = _a1.divide( z );
+        final Complex d2 = _a2.divide( zSquared );
+        final Complex denominator = d0.add( d1 ).add( d2 );
+
+        final Complex n0 = _b0;
+        final Complex n1 = _b1.divide( z );
+        final Complex n2 = _b2.divide( zSquared );
+        final Complex numerator = n0.add( n1 ).add( n2 );
+
+        // NOTE: Avoid divide by zero exceptions!
+        if ( Complex.ZERO.equals( denominator ) ) {
+            return Complex.ONE;
+        }
+
+        // Result = numerator / denominator
+        h = numerator.divide( denominator );
+
+        // Return the parametric filter value at the given frequency.
+        // NOTE: For now, we are returning the conjugate instead. This takes
+        //  care of sign problems in the delay time in some implementations.
+        return h.conjugate();
+    }
+
+    public boolean isActiveEqMode() {
+        // Iterate through the individual parametric filters values, and if any
+        // of them are non-zero, activate the EQ Mode.
+        boolean activeEqMode = false;
+
+        if ( !_bypassed ) {
+            // Only check for non-unity gain within a reasonable precision.
+            // TODO: Review this comparison and make it a generic math utility.
+            final float fuzzyC = ( float ) _c;
+            activeEqMode |= ( ( fuzzyC <= -0.001f ) || ( fuzzyC >= 0.001f ) );
+        }
+
+        return activeEqMode;
+    }
+
+    public boolean isEqBoostMode() {
+        // Iterate through the individual parametric filters values, and if any
+        // of them are positive non-zero, activate the EQ Boost Mode.
+        boolean eqBoostMode = false;
+
+        if ( !_bypassed ) {
+            // Only check for positive non-unity gain within reasonable
+            // precision.
+            // TODO: Review this comparison and make it a generic math utility.
+            final float fuzzyC = ( float ) _c;
+            eqBoostMode |= ( fuzzyC >= 0.001f );
+        }
+
+        return eqBoostMode;
+    }
+
+    // This method detects whether any of the filter parameters have been
+    // altered from their default state.
+    // NOTE: Most uses of Parametric Filters will result in an initially
+    //  constructed filter already being at non-default state, so maybe we
+    //  should
+    //  compare against initial state?
+    public boolean isNonDefaultEqMode() {
+        return ( isBypassed() != BYPASSED_DEFAULT ) || ( getF() != F_DEFAULT )
+               || ( getO() != O_DEFAULT ) || ( getC() != C_DEFAULT );
+    }
+
+    // Default pseudo-constructor.
+    public void reset() {
+        setParametricFilter( BYPASSED_DEFAULT,
+                             F_DEFAULT,
+                             O_DEFAULT,
+                             C_DEFAULT );
+    }
+
+    // Fully qualified pseudo-constructor.
+    void setParametricFilter( final boolean bypassed,
+                              final double f,
+                              final double o,
+                              final double c ) {
+        setBypassed( bypassed );
+        setF( f, false );
+        setO( o, false );
+        setC( c, false );
+
+        // Update the equation parameters any time the base values change.
+        calculateEqCoefficients();
+    }
+
+    public void setC( final double c,
+                      final boolean updateEquationParameters ) {
+        // Set the gain (cut/boost) and simultaneously compute the associated
+        // equation domain parameter "G" (for tight loop efficiency).
+        // NOTE: We take the absolute value of the gain before logging it, to
+        //  compensate for the equation inversion for H.
+        _c = c;
+        _g
+                = new Complex( FrequencySignalUtilities.getVoltageRatio(
+                FastMath.abs( c ) ), 0.0d );
+        _invertH = ( c < 0.0d );
+
+        // Update the equation parameters any time the base values change.
+        if ( updateEquationParameters ) {
+            calculateEqCoefficients();
+        }
+    }
+
+    public void setF( final double f,
+                      final boolean updateEquationParameters ) {
+        // Set the center frequency and simultaneously compute the associated
+        // equation domain parameter "W" (for tight loop efficiency).
+        // TODO: Find out why the opposite convention is used here for which
+        //  part is real and which part is imaginary vs. the
+        //  convertFrequencyToSDomain() method.
+        _f = f;
+        _w
+                =
+                new Complex( FrequencySignalUtilities.getAngularFrequencyRadians(
+                f ), 0.0d );
+
+        // Update the equation parameters any time the base values change.
+        if ( updateEquationParameters ) {
+            calculateEqCoefficients();
+        }
+    }
+
+    public void setO( final double o,
+                      final boolean updateEquationParameters ) {
+        // Set the octaves and simultaneously compute the associated equation
+        // domain parameter "Q" (for tight loop efficiency).
+        _o = o;
+        _q = new Complex( FrequencySignalUtilities.convertBandwidthToQ( o ),
+                          0.0d );
+
+        // Update the equation parameters any time the base values change.
+        if ( updateEquationParameters ) {
+            calculateEqCoefficients();
+        }
+    }
+
+    // Pseudo-copy constructor.
+    public void setParametricFilter( final ParametricFilter parametricFilter ) {
+        setParametricFilter( parametricFilter.isBypassed(),
+                             parametricFilter.getF(),
+                             parametricFilter.getO(),
+                             parametricFilter.getC() );
     }
 }

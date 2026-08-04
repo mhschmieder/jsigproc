@@ -38,15 +38,17 @@ public class ParametricFilters implements AcousticalFilter {
 
     // Parametric Filters are enabled by default, as they are initially flat.
     protected static final boolean PARAMETRIC_FILTERS_BYPASSED_DEFAULT = false;
-
-    private boolean              _parametricFiltersBypassed;
-    private int                  _numberOfFilters;
-    protected ParametricFilter[]   _parametricFilters;
+    protected ParametricFilter[] _parametricFilters;
+    private boolean _parametricFiltersBypassed;
+    private int _numberOfFilters;
 
     // This is the default constructor; it sets all instance variables to
     // default values.
-    public ParametricFilters( final int numberOfFilters, final String[] centerFrequencies ) {
-        this( PARAMETRIC_FILTERS_BYPASSED_DEFAULT, numberOfFilters, centerFrequencies );
+    public ParametricFilters( final int numberOfFilters,
+                              final String[] centerFrequencies ) {
+        this( PARAMETRIC_FILTERS_BYPASSED_DEFAULT,
+              numberOfFilters,
+              centerFrequencies );
     }
 
     // This is the default constructor; it sets all instance variables to
@@ -54,14 +56,10 @@ public class ParametricFilters implements AcousticalFilter {
     public ParametricFilters( final boolean parametricFiltersBypassed,
                               final int numberOfFilters,
                               final String[] centerFrequencies ) {
-        this( parametricFiltersBypassed, numberOfFilters, null, centerFrequencies );
-    }
-
-    // This is the fully qualified constructor.
-    public ParametricFilters( final boolean parametricFiltersBypassed,
-                              final int numberOfFilters,
-                              final ParametricFilter[] parametricFilters ) {
-        this( parametricFiltersBypassed, numberOfFilters, parametricFilters, null );
+        this( parametricFiltersBypassed,
+              numberOfFilters,
+              null,
+              centerFrequencies );
     }
 
     // This is the superset constructor, to allow a common initialization path.
@@ -76,20 +74,37 @@ public class ParametricFilters implements AcousticalFilter {
 
         // Set the array to be copies of the source array, if present.
         if ( parametricFilters != null ) {
-            final int numberOfFiltersToCopy =
-                    FastMath.min( parametricFilters.length, _numberOfFilters );
-            for ( int filterIndex = 0; filterIndex < numberOfFiltersToCopy; filterIndex++ ) {
-                _parametricFilters[ filterIndex ] =
-                                                  new ParametricFilter( parametricFilters[ filterIndex ] );
+            final int numberOfFiltersToCopy
+                    = FastMath.min( parametricFilters.length,
+                                    _numberOfFilters );
+            for ( int filterIndex = 0;
+                  filterIndex < numberOfFiltersToCopy;
+                  filterIndex++ ) {
+                _parametricFilters[ filterIndex ] = new ParametricFilter(
+                        parametricFilters[ filterIndex ] );
             }
         }
         else if ( centerFrequencies != null ) {
-            final int numberOfFiltersToSet = FastMath.min( centerFrequencies.length, _numberOfFilters );
-            for ( int filterIndex = 0; filterIndex < numberOfFiltersToSet; filterIndex++ ) {
-                _parametricFilters[ filterIndex ] = new ParametricFilter( NumberUtilities
-                        .parseDouble( centerFrequencies[ filterIndex ] ) );
+            final int numberOfFiltersToSet
+                    = FastMath.min( centerFrequencies.length,
+                                    _numberOfFilters );
+            for ( int filterIndex = 0;
+                  filterIndex < numberOfFiltersToSet;
+                  filterIndex++ ) {
+                _parametricFilters[ filterIndex ] = new ParametricFilter(
+                        NumberUtilities.parseDouble( centerFrequencies[ filterIndex ] ) );
             }
         }
+    }
+
+    // This is the fully qualified constructor.
+    public ParametricFilters( final boolean parametricFiltersBypassed,
+                              final int numberOfFilters,
+                              final ParametricFilter[] parametricFilters ) {
+        this( parametricFiltersBypassed,
+              numberOfFilters,
+              parametricFilters,
+              null );
     }
 
     // NOTE: This is the copy constructor, and is offered in place of clone()
@@ -100,6 +115,47 @@ public class ParametricFilters implements AcousticalFilter {
               parametricFilters.getNumberOfFilters(),
               parametricFilters.getParametricFilters(),
               null );
+    }
+
+    public final int getNumberOfFilters() {
+        return _numberOfFilters;
+    }
+
+    protected final ParametricFilter[] getParametricFilters() {
+        return _parametricFilters;
+    }
+
+    // Pseudo-copy constructor.
+    protected final void setParametricFilters( final ParametricFilters pParametricFilters ) {
+        _parametricFiltersBypassed
+                = pParametricFilters.isParametricFiltersBypassed();
+        _numberOfFilters = pParametricFilters.getNumberOfFilters();
+
+        // Set the array to be copies of the source array.
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
+            setParametricFilter( filterIndex,
+                                 pParametricFilters.getParametricFilter(
+                                         filterIndex ) );
+        }
+    }
+
+    public final ParametricFilter getParametricFilter( final int filterIndex ) {
+        return _parametricFilters[ filterIndex ];
+    }
+
+    protected final void setParametricFilter( final int filterIndex,
+                                              final ParametricFilter parametricFilter ) {
+        _parametricFilters[ filterIndex ].setParametricFilter( parametricFilter );
+    }
+
+    public final boolean isParametricFiltersBypassed() {
+        return _parametricFiltersBypassed;
+    }
+
+    public final void setParametricFiltersBypassed( final boolean parametricFiltersBypassed ) {
+        _parametricFiltersBypassed = parametricFiltersBypassed;
     }
 
     // NOTE: Cloning is disabled as it is dangerous; use the copy constructor
@@ -125,7 +181,9 @@ public class ParametricFilters implements AcousticalFilter {
         Complex h = Complex.ONE;
 
         if ( !_parametricFiltersBypassed ) {
-            for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+            for ( int filterIndex = 0;
+                  filterIndex < _numberOfFilters;
+                  filterIndex++ ) {
                 h = h.multiply( _parametricFilters[ filterIndex ].getH( f ) );
             }
         }
@@ -134,20 +192,8 @@ public class ParametricFilters implements AcousticalFilter {
         return h;
     }
 
-    public final int getNumberOfFilters() {
-        return _numberOfFilters;
-    }
-
     public final double getO( final int filterIndex ) {
         return _parametricFilters[ filterIndex ].getO();
-    }
-
-    public final ParametricFilter getParametricFilter( final int filterIndex ) {
-        return _parametricFilters[ filterIndex ];
-    }
-
-    protected final ParametricFilter[] getParametricFilters() {
-        return _parametricFilters;
     }
 
     public final boolean isActiveEqMode() {
@@ -156,7 +202,9 @@ public class ParametricFilters implements AcousticalFilter {
         boolean activeEqMode = false;
 
         if ( !_parametricFiltersBypassed ) {
-            for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+            for ( int filterIndex = 0;
+                  filterIndex < _numberOfFilters;
+                  filterIndex++ ) {
                 if ( _parametricFilters[ filterIndex ].isActiveEqMode() ) {
                     activeEqMode = true;
                     break;
@@ -169,7 +217,9 @@ public class ParametricFilters implements AcousticalFilter {
 
     public final boolean isAllParametricFiltersBypassed() {
         boolean allBypassed = true;
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
             if ( !isParametricFilterBypassed( filterIndex ) ) {
                 allBypassed = false;
                 break;
@@ -178,9 +228,29 @@ public class ParametricFilters implements AcousticalFilter {
         return allBypassed;
     }
 
+    public final boolean isParametricFilterBypassed( final int filterIndex ) {
+        return _parametricFilters[ filterIndex ].isBypassed();
+    }
+
+    public final void setAllParametricFiltersBypassed( final boolean allParametricFiltersBypassed ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
+            setParametricFilterBypassed( filterIndex,
+                                         allParametricFiltersBypassed );
+        }
+    }
+
+    public final void setParametricFilterBypassed( final int filterIndex,
+                                                   final boolean parametricFilterBypassed ) {
+        _parametricFilters[ filterIndex ].setBypassed( parametricFilterBypassed );
+    }
+
     public final boolean isAllParametricFiltersEnabled() {
         boolean allEnabled = true;
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
             if ( isParametricFilterBypassed( filterIndex ) ) {
                 allEnabled = false;
                 break;
@@ -195,7 +265,9 @@ public class ParametricFilters implements AcousticalFilter {
         boolean eqBoostMode = false;
 
         if ( !_parametricFiltersBypassed ) {
-            for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+            for ( int filterIndex = 0;
+                  filterIndex < _numberOfFilters;
+                  filterIndex++ ) {
                 if ( _parametricFilters[ filterIndex ].isEqBoostMode() ) {
                     eqBoostMode = true;
                     break;
@@ -211,11 +283,14 @@ public class ParametricFilters implements AcousticalFilter {
         // have non-default values, activate the Non-Default EQ Mode.
         boolean nonDefaultEqMode = false;
 
-        if ( isParametricFiltersBypassed() != PARAMETRIC_FILTERS_BYPASSED_DEFAULT ) {
+        if ( isParametricFiltersBypassed()
+             != PARAMETRIC_FILTERS_BYPASSED_DEFAULT ) {
             return true;
         }
 
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
             if ( _parametricFilters[ filterIndex ].isNonDefaultEqMode() ) {
                 nonDefaultEqMode = true;
                 break;
@@ -225,20 +300,6 @@ public class ParametricFilters implements AcousticalFilter {
         return nonDefaultEqMode;
     }
 
-    public final boolean isParametricFilterBypassed( final int filterIndex ) {
-        return _parametricFilters[ filterIndex ].isBypassed();
-    }
-
-    public final boolean isParametricFiltersBypassed() {
-        return _parametricFiltersBypassed;
-    }
-
-    public final void setAllParametricFiltersBypassed( final boolean allParametricFiltersBypassed ) {
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
-            setParametricFilterBypassed( filterIndex, allParametricFiltersBypassed );
-        }
-    }
-
     public final void setC( final int filterIndex,
                             final double c,
                             final boolean updateEquationParameters ) {
@@ -246,13 +307,16 @@ public class ParametricFilters implements AcousticalFilter {
     }
 
     // Fully qualified pseudo-constructor.
-    public final void setDefaults( final int numberOfFilters, final String[] centerFrequencies ) {
+    public final void setDefaults( final int numberOfFilters,
+                                   final String[] centerFrequencies ) {
         _parametricFiltersBypassed = PARAMETRIC_FILTERS_BYPASSED_DEFAULT;
         _numberOfFilters = numberOfFilters;
 
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
-            _parametricFilters[ filterIndex ] = new ParametricFilter( NumberUtilities
-                    .parseDouble( centerFrequencies[ filterIndex ] ) );
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
+            _parametricFilters[ filterIndex ] = new ParametricFilter(
+                    NumberUtilities.parseDouble( centerFrequencies[ filterIndex ] ) );
         }
     }
 
@@ -268,9 +332,23 @@ public class ParametricFilters implements AcousticalFilter {
         _parametricFilters[ filterIndex ].setO( o, updateEquationParameters );
     }
 
-    protected final void setParametricFilter( final int filterIndex,
-                                              final ParametricFilter parametricFilter ) {
-        _parametricFilters[ filterIndex ].setParametricFilter( parametricFilter );
+    // Pseudo-copy constructor.
+    protected final void setParametricFilters( final ParametricFilters pParametricFilters,
+                                               final boolean pIgnoreIfInactive ) {
+        // NOTE: If we are ignoring inactive filters, we are trying to isolate
+        //  changes to an existing filter and therefore also avoid changing the
+        //  status of the overall Bypassed flag for the Parametric Filters.
+        _numberOfFilters = pParametricFilters.getNumberOfFilters();
+
+        // Set the array to be copies of the source array.
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
+            setParametricFilter( filterIndex,
+                                 pParametricFilters.getParametricFilter(
+                                         filterIndex ),
+                                 pIgnoreIfInactive );
+        }
     }
 
     protected final void setParametricFilter( final int filterIndex,
@@ -281,43 +359,6 @@ public class ParametricFilters implements AcousticalFilter {
         }
 
         setParametricFilter( filterIndex, parametricFilter );
-    }
-
-    public final void setParametricFilterBypassed( final int filterIndex,
-                                                   final boolean parametricFilterBypassed ) {
-        _parametricFilters[ filterIndex ].setBypassed( parametricFilterBypassed );
-    }
-
-    // Pseudo-copy constructor.
-    protected final void setParametricFilters( final ParametricFilters pParametricFilters ) {
-        _parametricFiltersBypassed = pParametricFilters.isParametricFiltersBypassed();
-        _numberOfFilters = pParametricFilters.getNumberOfFilters();
-
-        // Set the array to be copies of the source array.
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
-            setParametricFilter( filterIndex,
-                                 pParametricFilters.getParametricFilter( filterIndex ) );
-        }
-    }
-
-    // Pseudo-copy constructor.
-    protected final void setParametricFilters( final ParametricFilters pParametricFilters,
-                                               final boolean pIgnoreIfInactive ) {
-        // NOTE: If we are ignoring inactive filters, we are trying to isolate
-        //  changes to an existing filter and therefore also avoid changing the
-        //  status of the overall Bypassed flag for the Parametric Filters.
-        _numberOfFilters = pParametricFilters.getNumberOfFilters();
-
-        // Set the array to be copies of the source array.
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
-            setParametricFilter( filterIndex,
-                                 pParametricFilters.getParametricFilter( filterIndex ),
-                                 pIgnoreIfInactive );
-        }
-    }
-
-    public final void setParametricFiltersBypassed( final boolean parametricFiltersBypassed ) {
-        _parametricFiltersBypassed = parametricFiltersBypassed;
     }
 
     // TODO: Enforce this method on all filters via an interface.

@@ -39,21 +39,18 @@ public class AllPassFilters implements AcousticalFilter {
     // All Pass Filters are bypassed by default as they are never flat.
     protected static final boolean ALL_PASS_FILTERS_BYPASSED_DEFAULT = true;
 
-    private boolean              _allPassFiltersBypassed;
-    private int                  _numberOfFilters;
-    private AllPassFilter[]      _allPassFilters;
+    private boolean _allPassFiltersBypassed;
+    private int _numberOfFilters;
+    private AllPassFilter[] _allPassFilters;
 
     // This is the default constructor; it sets all instance variables to
     // default values based on the supplied center frequencies per filter.
-    public AllPassFilters( final int numberOfFilters, final String[] centerFrequencies ) {
-        this( ALL_PASS_FILTERS_BYPASSED_DEFAULT, numberOfFilters, null, centerFrequencies );
-    }
-
-    // This is the fully qualified constructor.
-    public AllPassFilters( final boolean allPassFiltersBypassed,
-                           final int numberOfFilters,
-                           final AllPassFilter[] allPassFilters ) {
-        this( allPassFiltersBypassed, numberOfFilters, allPassFilters, null );
+    public AllPassFilters( final int numberOfFilters,
+                           final String[] centerFrequencies ) {
+        this( ALL_PASS_FILTERS_BYPASSED_DEFAULT,
+              numberOfFilters,
+              null,
+              centerFrequencies );
     }
 
     // This is the superset constructor, to allow a common initialization path.
@@ -68,18 +65,33 @@ public class AllPassFilters implements AcousticalFilter {
 
         // Set the array to be copies of the source array, if present.
         if ( allPassFilters != null ) {
-            final int numberOfFiltersToCopy = FastMath.min( allPassFilters.length, _numberOfFilters );
-            for ( int filterIndex = 0; filterIndex < numberOfFiltersToCopy; filterIndex++ ) {
-                _allPassFilters[ filterIndex ] = new AllPassFilter( allPassFilters[ filterIndex ] );
+            final int numberOfFiltersToCopy
+                    = FastMath.min( allPassFilters.length, _numberOfFilters );
+            for ( int filterIndex = 0;
+                  filterIndex < numberOfFiltersToCopy;
+                  filterIndex++ ) {
+                _allPassFilters[ filterIndex ] = new AllPassFilter(
+                        allPassFilters[ filterIndex ] );
             }
         }
         else if ( centerFrequencies != null ) {
-            final int numberOfFiltersToSet = FastMath.min( centerFrequencies.length, _numberOfFilters );
-            for ( int filterIndex = 0; filterIndex < numberOfFiltersToSet; filterIndex++ ) {
-                _allPassFilters[ filterIndex ] = new AllPassFilter( NumberUtilities
-                        .parseDouble( centerFrequencies[ filterIndex ] ) );
+            final int numberOfFiltersToSet
+                    = FastMath.min( centerFrequencies.length,
+                                    _numberOfFilters );
+            for ( int filterIndex = 0;
+                  filterIndex < numberOfFiltersToSet;
+                  filterIndex++ ) {
+                _allPassFilters[ filterIndex ] = new AllPassFilter(
+                        NumberUtilities.parseDouble( centerFrequencies[ filterIndex ] ) );
             }
         }
+    }
+
+    // This is the fully qualified constructor.
+    public AllPassFilters( final boolean allPassFiltersBypassed,
+                           final int numberOfFilters,
+                           final AllPassFilter[] allPassFilters ) {
+        this( allPassFiltersBypassed, numberOfFilters, allPassFilters, null );
     }
 
     // NOTE: This is the copy constructor, and is offered in place of clone()
@@ -92,19 +104,54 @@ public class AllPassFilters implements AcousticalFilter {
               null );
     }
 
-    // NOTE: Cloning is disabled as it is dangerous; use the copy constructor
-    //  instead.
-    @Override
-    protected final Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
+    protected final AllPassFilter[] getAllPassFilters() {
+        return _allPassFilters;
+    }
+
+    // Pseudo-copy constructor.
+    protected final void setAllPassFilters( final AllPassFilters allPassFilters ) {
+        _allPassFiltersBypassed = allPassFilters.isAllPassFiltersBypassed();
+        _numberOfFilters = allPassFilters.getNumberOfFilters();
+
+        // Set the array to be copies of the source array.
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
+            setAllPassFilter( filterIndex,
+                              allPassFilters.getAllPassFilter( filterIndex ) );
+        }
     }
 
     public final AllPassFilter getAllPassFilter( final int filterIndex ) {
         return _allPassFilters[ filterIndex ];
     }
 
-    protected final AllPassFilter[] getAllPassFilters() {
-        return _allPassFilters;
+    public final void setAllPassFilter( final int filterIndex,
+                                        final AllPassFilter allPassFilter ) {
+        _allPassFilters[ filterIndex ] = new AllPassFilter( allPassFilter );
+    }
+
+    public final int getNumberOfFilters() {
+        return _numberOfFilters;
+    }
+
+    public final void setNumberOfFilters( final int numberOfFilters ) {
+        _numberOfFilters = numberOfFilters;
+    }
+
+    public final boolean isAllPassFiltersBypassed() {
+        return _allPassFiltersBypassed;
+    }
+
+    public void setAllPassFiltersBypassed( final boolean allPassFiltersBypassed ) {
+        _allPassFiltersBypassed = allPassFiltersBypassed;
+    }
+
+    // NOTE: Cloning is disabled as it is dangerous; use the copy constructor
+    //  instead.
+    @Override
+    protected final Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
     }
 
     public final double getF( final int filterIndex ) {
@@ -119,17 +166,15 @@ public class AllPassFilters implements AcousticalFilter {
         Complex h = Complex.ONE;
 
         if ( !_allPassFiltersBypassed ) {
-            for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+            for ( int filterIndex = 0;
+                  filterIndex < _numberOfFilters;
+                  filterIndex++ ) {
                 h = h.multiply( _allPassFilters[ filterIndex ].getH( f ) );
             }
         }
 
         // Return the All Pass Filter value at a given frequency.
         return h;
-    }
-
-    public final int getNumberOfFilters() {
-        return _numberOfFilters;
     }
 
     public final double getO( final int filterIndex ) {
@@ -143,7 +188,9 @@ public class AllPassFilters implements AcousticalFilter {
         boolean activeEqMode = false;
 
         if ( !_allPassFiltersBypassed ) {
-            for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+            for ( int filterIndex = 0;
+                  filterIndex < _numberOfFilters;
+                  filterIndex++ ) {
                 if ( _allPassFilters[ filterIndex ].isActiveEqMode() ) {
                     activeEqMode = true;
                     break;
@@ -156,7 +203,9 @@ public class AllPassFilters implements AcousticalFilter {
 
     public final boolean isAllAllPassFiltersBypassed() {
         boolean allBypassed = true;
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
             if ( !isAllPassFilterBypassed( filterIndex ) ) {
                 allBypassed = false;
                 break;
@@ -165,9 +214,28 @@ public class AllPassFilters implements AcousticalFilter {
         return allBypassed;
     }
 
+    public final boolean isAllPassFilterBypassed( final int filterIndex ) {
+        return _allPassFilters[ filterIndex ].isBypassed();
+    }
+
+    public final void setAllAllPassFiltersBypassed( final boolean allAllPassFiltersBypassed ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
+            setAllPassFilterBypassed( filterIndex, allAllPassFiltersBypassed );
+        }
+    }
+
+    public final void setAllPassFilterBypassed( final int filterIndex,
+                                                final boolean allPassFilterBypassed ) {
+        _allPassFilters[ filterIndex ].setBypassed( allPassFilterBypassed );
+    }
+
     public final boolean isAllAllPassFiltersEnabled() {
         boolean allEnabled = true;
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
             if ( isAllPassFilterBypassed( filterIndex ) ) {
                 allEnabled = false;
                 break;
@@ -176,21 +244,15 @@ public class AllPassFilters implements AcousticalFilter {
         return allEnabled;
     }
 
-    public final boolean isAllPassFilterBypassed( final int filterIndex ) {
-        return _allPassFilters[ filterIndex ].isBypassed();
-    }
-
-    public final boolean isAllPassFiltersBypassed() {
-        return _allPassFiltersBypassed;
-    }
-
     public final boolean isEqBoostMode() {
         // Iterate through the individual all pass filters, and if any of them
         // have positive non-unity gain, activate the EQ Boost Mode.
         boolean eqBoostMode = false;
 
         if ( !_allPassFiltersBypassed ) {
-            for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+            for ( int filterIndex = 0;
+                  filterIndex < _numberOfFilters;
+                  filterIndex++ ) {
                 if ( _allPassFilters[ filterIndex ].isEqBoostMode() ) {
                     eqBoostMode = true;
                     break;
@@ -210,7 +272,9 @@ public class AllPassFilters implements AcousticalFilter {
             return true;
         }
 
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
             if ( _allPassFilters[ filterIndex ].isNonDefaultEqMode() ) {
                 nonDefaultEqMode = true;
                 break;
@@ -220,63 +284,37 @@ public class AllPassFilters implements AcousticalFilter {
         return nonDefaultEqMode;
     }
 
-    public final void setAllAllPassFiltersBypassed( final boolean allAllPassFiltersBypassed ) {
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
-            setAllPassFilterBypassed( filterIndex, allAllPassFiltersBypassed );
-        }
-    }
-
-    public final void setAllPassFilter( final int filterIndex, final AllPassFilter allPassFilter ) {
-        _allPassFilters[ filterIndex ] = new AllPassFilter( allPassFilter );
-    }
-
     public final void setAllPassFilter( final int filterIndex,
                                         final boolean allPassBypassed,
                                         final double f,
                                         final double o ) {
-        _allPassFilters[ filterIndex ] = new AllPassFilter( allPassBypassed, f, o );
-    }
-
-    public final void setAllPassFilterBypassed( final int filterIndex,
-                                                final boolean allPassFilterBypassed ) {
-        _allPassFilters[ filterIndex ].setBypassed( allPassFilterBypassed );
-    }
-
-    // Pseudo-copy constructor.
-    protected final void setAllPassFilters( final AllPassFilters allPassFilters ) {
-        _allPassFiltersBypassed = allPassFilters.isAllPassFiltersBypassed();
-        _numberOfFilters = allPassFilters.getNumberOfFilters();
-
-        // Set the array to be copies of the source array.
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
-            setAllPassFilter( filterIndex, allPassFilters.getAllPassFilter( filterIndex ) );
-        }
-    }
-
-    public void setAllPassFiltersBypassed( final boolean allPassFiltersBypassed ) {
-        _allPassFiltersBypassed = allPassFiltersBypassed;
+        _allPassFilters[ filterIndex ] = new AllPassFilter( allPassBypassed,
+                                                            f,
+                                                            o );
     }
 
     // Fully qualified pseudo-constructor.
-    public final void setDefaults( final int numberOfFilters, final String[] centerFrequency ) {
+    public final void setDefaults( final int numberOfFilters,
+                                   final String[] centerFrequency ) {
         _allPassFiltersBypassed = ALL_PASS_FILTERS_BYPASSED_DEFAULT;
         _numberOfFilters = numberOfFilters;
 
-        for ( int filterIndex = 0; filterIndex < _numberOfFilters; filterIndex++ ) {
-            _allPassFilters[ filterIndex ] = new AllPassFilter( NumberUtilities
-                    .parseDouble( centerFrequency[ filterIndex ] ) );
+        for ( int filterIndex = 0;
+              filterIndex < _numberOfFilters;
+              filterIndex++ ) {
+            _allPassFilters[ filterIndex ]
+                    = new AllPassFilter( NumberUtilities.parseDouble(
+                    centerFrequency[ filterIndex ] ) );
         }
     }
 
-    public final void setF( final int filterIndex, final double f ) {
+    public final void setF( final int filterIndex,
+                            final double f ) {
         _allPassFilters[ filterIndex ].setF( f );
     }
 
-    public final void setNumberOfFilters( final int numberOfFilters ) {
-        _numberOfFilters = numberOfFilters;
-    }
-
-    public final void setO( final int filterIndex, final double o ) {
+    public final void setO( final int filterIndex,
+                            final double o ) {
         _allPassFilters[ filterIndex ].setO( o );
     }
 }

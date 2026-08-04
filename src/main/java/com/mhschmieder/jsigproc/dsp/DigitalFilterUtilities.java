@@ -44,7 +44,7 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class DigitalFilterUtilities {
 
-    public static final String FILTER_SLOPE_UNITS  = " dB/Octave"; //$NON-NLS-1$
+    public static final String FILTER_SLOPE_UNITS = " dB/Octave"; //$NON-NLS-1$
 
     public static final int BUTTERWORTH_DB_TO_FILTER_ORDER_RATIO = 6;
 
@@ -53,25 +53,29 @@ public class DigitalFilterUtilities {
     public static final int NUMBER_OF_POLES_PER_BIQUAD = 2;
 
     // Convert a frequency (in Hertz) to the z-Domain (digital).
-    public static Complex convertFrequencyToZDomain(
-            final double poleFrequencyHz,
-            final double samplingFrequencyHz ) {
+    public static Complex convertFrequencyToZDomain( final double poleFrequencyHz,
+                                                     final double samplingFrequencyHz ) {
         // Theta is the angle to the pole frequency, in the z-plane.
-        final double poleAngleRadians = getPoleAngleRadians(
-                poleFrequencyHz, samplingFrequencyHz );
-        return new Complex(
-                FastMath.cos( poleAngleRadians ),
-                FastMath.sin( poleAngleRadians ) );
-     }
+        final double poleAngleRadians = getPoleAngleRadians( poleFrequencyHz,
+                                                             samplingFrequencyHz );
+        return new Complex( FastMath.cos( poleAngleRadians ),
+                            FastMath.sin( poleAngleRadians ) );
+    }
+
+    // Get the angle to the pole (radians), in the z-plane.
+    public static double getPoleAngleRadians( final double poleFrequencyHz,
+                                              final double samplingFrequencyHz ) {
+        final double frequencyRatio = poleFrequencyHz / samplingFrequencyHz;
+        return MathConstants.TWO_PI * frequencyRatio;
+    }
 
     // Get the bilinear transformation given coefficients in the analog domain.
     // See http://en.wikipedia.org/wiki/Bilinear_transform for details.
-    public static Complex getBilinearTransform(
-            final Complex z,
-            final Complex zSquared,
-            final double w,
-            final int biquadSectionCount,
-            final double[][][] analogCoefficients ) {
+    public static Complex getBilinearTransform( final Complex z,
+                                                final Complex zSquared,
+                                                final double w,
+                                                final int biquadSectionCount,
+                                                final double[][][] analogCoefficients ) {
         // This is the most general bilinear transform for up to four biquad
         // sections (including pre-warping). It includes all twenty-four
         // coefficients (three paired coefficients per biquad section).
@@ -86,65 +90,30 @@ public class DigitalFilterUtilities {
         for ( int i = 0; i < biquadSectionCount; i++ ) {
             // Get a set of digital domain biquad coefficients.
             final double[][] digitalBiquadCoefficients
-                    = getDigitalBiquadCoefficients(
-                            eQSin,
-                    oneMinusCos,
-                    onePlusCos,
-                    analogCoefficients[ i ] );
+                    = getDigitalBiquadCoefficients( eQSin,
+                                                    oneMinusCos,
+                                                    onePlusCos,
+                                                    analogCoefficients[ i ] );
 
             // Get the digital biquad filter for this section.
-            result = result.multiply( getDigitalBiquadFilter(
-                    z, zSquared, digitalBiquadCoefficients ) );
+            result = result.multiply( getDigitalBiquadFilter( z,
+                                                              zSquared,
+                                                              digitalBiquadCoefficients ) );
         }
 
         return result;
     }
 
-    // Get the filter slope order to filter slope dB mapping (relevant to
-    // Butterworth-based filters; including Linkwitz-Riley filters).
-    public static int getButterworthFilterSlopeDb(
-            final short butterworthFilterSlopeOrder ) {
-        return butterworthFilterSlopeOrder
-                * BUTTERWORTH_DB_TO_FILTER_ORDER_RATIO;
-    }
-
-    // Get the filter slope order to filter slope label mapping (relevant to
-    // Butterworth-based filters; including Linkwitz-Riley filters).
-    public static String getButterworthFilterSlopeLabel(
-            final short butterworthFilterSlopeOrder ) {
-        final int butterworthFilterSlopeDb = getButterworthFilterSlopeDb(
-                butterworthFilterSlopeOrder );
-        return getFilterSlopeLabel( butterworthFilterSlopeDb );
-    }
-
-    // Get the filter slope dB to filter slope order mapping (relevant to
-    // Butterworth-based filters; including Linkwitz-Riley filters).
-    public static short getButterworthFilterSlopeOrder(
-            final int butterworthFilterSlopeDb ) {
-        return ( short ) FastMath.floor(
-                butterworthFilterSlopeDb
-                        / BUTTERWORTH_DB_TO_FILTER_ORDER_RATIO );
-    }
-
-    // Get the filter slope label to filter slope order mapping (relevant to
-    // Butterworth-based filters; including Linkwitz-Riley filters).
-    public static short getButterworthFilterSlopeOrder(
-            final String butterworthFilterSlopeLabel ) {
-        final int butterworthFilterSlopeDb = getFilterSlopeDb(
-                butterworthFilterSlopeLabel );
-        return getButterworthFilterSlopeOrder( butterworthFilterSlopeDb );
-    }
-
     // Get the digital biquad coefficients for a Butterworth filter.
     // See http://en.wikipedia.org/wiki/Butterworth_filter for details.
-    public static double[][] getDigitalBiquadCoefficients(
-            final double eQSin,
-            final double oneMinusCos,
-            final double onePlusCos,
-            final double[][] analogCoefficients ) {
+    public static double[][] getDigitalBiquadCoefficients( final double eQSin,
+                                                           final double oneMinusCos,
+                                                           final double onePlusCos,
+                                                           final double[][] analogCoefficients ) {
         // Calculate a full set of digital domain biquad coefficients.
-        final double[][] digitalBiquadCoefficients  = new double[
-                NUMBER_OF_POLES_PER_BIQUAD ][ NUMBER_OF_QUAD_COEFFICIENTS ];
+        final double[][] digitalBiquadCoefficients
+                =
+                new double[ NUMBER_OF_POLES_PER_BIQUAD ][ NUMBER_OF_QUAD_COEFFICIENTS ];
 
         for ( int i = 0; i < NUMBER_OF_POLES_PER_BIQUAD; i++ ) {
             digitalBiquadCoefficients[ i ] = getDigitalBiquadPoleCoefficients(
@@ -157,20 +126,50 @@ public class DigitalFilterUtilities {
         return digitalBiquadCoefficients;
     }
 
+    // Get the digital biquad coefficients for a Butterworth filter pole.
+    // See http://en.wikipedia.org/wiki/Butterworth_filter for details.
+    public static double[] getDigitalBiquadPoleCoefficients( final double eQSin,
+                                                             final double oneMinusCos,
+                                                             final double onePlusCos,
+                                                             final double[] analogCoefficients ) {
+        // Calculate a full set of digital domain biquad pole coefficients.
+        // NOTE: The redundant assignments are for ease of verifying against
+        // textbook implementations of this algorithm.
+        final double[] digitalBiquadPoleCoefficients
+                = new double[ NUMBER_OF_QUAD_COEFFICIENTS ];
+
+        final double A = analogCoefficients[ 0 ];
+        final double B = analogCoefficients[ 1 ];
+        final double C = analogCoefficients[ 2 ];
+
+        final double a0 = ( ( A * onePlusCos ) - ( B * eQSin ) ) + ( C
+                                                                     * oneMinusCos );
+        final double a1 = ( -2d * A * onePlusCos ) + ( 2.0d * C * oneMinusCos );
+        final double a2 = ( A * onePlusCos ) + ( B * eQSin ) + ( C
+                                                                 * oneMinusCos );
+
+        digitalBiquadPoleCoefficients[ 0 ] = a0;
+        digitalBiquadPoleCoefficients[ 1 ] = a1;
+        digitalBiquadPoleCoefficients[ 2 ] = a2;
+
+        return digitalBiquadPoleCoefficients;
+    }
+
     // Get the bilinear transformation given coefficients in the digital domain.
     // See http://en.wikipedia.org/wiki/Digital_biquad_filter for details.
-    public static Complex getDigitalBiquadFilter(
-            final Complex z,
-            final Complex zSquared,
-            final double[][] biquadCoefficients ) {
+    public static Complex getDigitalBiquadFilter( final Complex z,
+                                                  final Complex zSquared,
+                                                  final double[][] biquadCoefficients ) {
         // Calculate the bilinear transform for the given break point.
         // NOTE: The convention used in this code is an/bn, which is opposite
         // the one from Matlab, Audio EQ Cookbook, and various Wiki sources,
         // where bn/an is more common.
-        final Complex numerator = getQuadraticFactor(
-                z, zSquared, biquadCoefficients[ 0 ] );
-        final Complex denominator = getQuadraticFactor(
-                z, zSquared, biquadCoefficients[ 1 ] );
+        final Complex numerator = getQuadraticFactor( z,
+                                                      zSquared,
+                                                      biquadCoefficients[ 0 ] );
+        final Complex denominator = getQuadraticFactor( z,
+                                                        zSquared,
+                                                        biquadCoefficients[ 1 ] );
 
         // NOTE: Avoid divide by zero exceptions!
         if ( Complex.ZERO.equals( denominator ) ) {
@@ -181,63 +180,13 @@ public class DigitalFilterUtilities {
         return numerator.divide( denominator );
     }
 
-    // Get the digital biquad coefficients for a Butterworth filter pole.
-    // See http://en.wikipedia.org/wiki/Butterworth_filter for details.
-    public static double[] getDigitalBiquadPoleCoefficients(
-            final double eQSin,
-            final double oneMinusCos,
-            final double onePlusCos,
-            final double[] analogCoefficients ) {
-        // Calculate a full set of digital domain biquad pole coefficients.
-        // NOTE: The redundant assignments are for ease of verifying against
-        // textbook implementations of this algorithm.
-        final double[] digitalBiquadPoleCoefficients = new double[
-                NUMBER_OF_QUAD_COEFFICIENTS ];
-
-        final double A = analogCoefficients[ 0 ];
-        final double B = analogCoefficients[ 1 ];
-        final double C = analogCoefficients[ 2 ];
-
-        final double a0 = ( ( A * onePlusCos ) - ( B * eQSin ) )
-                + ( C * oneMinusCos );
-        final double a1 = ( -2d * A * onePlusCos ) + ( 2.0d * C * oneMinusCos );
-        final double a2 = ( A * onePlusCos ) + ( B * eQSin )
-                + ( C * oneMinusCos );
-
-        digitalBiquadPoleCoefficients[ 0 ] = a0;
-        digitalBiquadPoleCoefficients[ 1 ] = a1;
-        digitalBiquadPoleCoefficients[ 2 ] = a2;
-
-        return digitalBiquadPoleCoefficients;
-    }
-
-    // Get the filter slope label to filter slope dB mapping (all filters).
-    public static int getFilterSlopeDb( final String filterSlopeLabel ) {
-        return NumberUtilities.parseInteger( filterSlopeLabel.split(
-                FILTER_SLOPE_UNITS )[ 0 ] );
-    }
-
-    // Get the filter slope dB to filter slope label mapping (all filters).
-    public static String getFilterSlopeLabel( final int filterSlopeDb ) {
-        return Integer.toString( filterSlopeDb ) + FILTER_SLOPE_UNITS;
-    }
-
-    // Get the angle to the pole (radians), in the z-plane.
-    public static double getPoleAngleRadians(
-            final double poleFrequencyHz,
-            final double samplingFrequencyHz ) {
-        final double frequencyRatio = poleFrequencyHz / samplingFrequencyHz;
-        return MathConstants.TWO_PI * frequencyRatio;
-    }
-
     // Get a quadratic factor (numerator or denominator, depending on the
     // specific biquad pole coefficients) of a linear transform, given
     // coefficients in the digital domain.
     // See http://en.wikipedia.org/wiki/Digital_biquad_filter for details.
-    public static Complex getQuadraticFactor(
-            final Complex z,
-            final Complex zSquared,
-            final double[] digitalQuadCoefficients ) {
+    public static Complex getQuadraticFactor( final Complex z,
+                                              final Complex zSquared,
+                                              final double[] digitalQuadCoefficients ) {
         // Calculate the linear transform for the given break point.
         // NOTE: Most software uses negative powers of z, but some firmware
         //  implementations (usually in C) use positive powers of z due to older
@@ -250,6 +199,48 @@ public class DigitalFilterUtilities {
         final double a2 = digitalQuadCoefficients[ 2 ];
 
         return new Complex( a0 ).divide( zSquared )
-                .add( new Complex( a1 ).divide( z ) ).add( new Complex( a2 ) );
+                                .add( new Complex( a1 ).divide( z ) )
+                                .add( new Complex( a2 ) );
+    }
+
+    // Get the filter slope order to filter slope label mapping (relevant to
+    // Butterworth-based filters; including Linkwitz-Riley filters).
+    public static String getButterworthFilterSlopeLabel( final short butterworthFilterSlopeOrder ) {
+        final int butterworthFilterSlopeDb = getButterworthFilterSlopeDb(
+                butterworthFilterSlopeOrder );
+        return getFilterSlopeLabel( butterworthFilterSlopeDb );
+    }
+
+    // Get the filter slope order to filter slope dB mapping (relevant to
+    // Butterworth-based filters; including Linkwitz-Riley filters).
+    public static int getButterworthFilterSlopeDb( final short butterworthFilterSlopeOrder ) {
+        return butterworthFilterSlopeOrder
+               * BUTTERWORTH_DB_TO_FILTER_ORDER_RATIO;
+    }
+
+    // Get the filter slope dB to filter slope label mapping (all filters).
+    public static String getFilterSlopeLabel( final int filterSlopeDb ) {
+        return Integer.toString( filterSlopeDb ) + FILTER_SLOPE_UNITS;
+    }
+
+    // Get the filter slope label to filter slope order mapping (relevant to
+    // Butterworth-based filters; including Linkwitz-Riley filters).
+    public static short getButterworthFilterSlopeOrder( final String butterworthFilterSlopeLabel ) {
+        final int butterworthFilterSlopeDb = getFilterSlopeDb(
+                butterworthFilterSlopeLabel );
+        return getButterworthFilterSlopeOrder( butterworthFilterSlopeDb );
+    }
+
+    // Get the filter slope dB to filter slope order mapping (relevant to
+    // Butterworth-based filters; including Linkwitz-Riley filters).
+    public static short getButterworthFilterSlopeOrder( final int butterworthFilterSlopeDb ) {
+        return ( short ) FastMath.floor( butterworthFilterSlopeDb
+                                         / BUTTERWORTH_DB_TO_FILTER_ORDER_RATIO );
+    }
+
+    // Get the filter slope label to filter slope dB mapping (all filters).
+    public static int getFilterSlopeDb( final String filterSlopeLabel ) {
+        return NumberUtilities.parseInteger( filterSlopeLabel.split(
+                FILTER_SLOPE_UNITS )[ 0 ] );
     }
 }

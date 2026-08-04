@@ -34,21 +34,23 @@ import com.mhschmieder.jcommons.lang.NumberUtilities;
 
 public final class GeneralParametricFilters extends ParametricFilters {
 
-    public static final int                               NUMBER_OF_FILTERS  = 10;
+    public static final int NUMBER_OF_FILTERS = 10;
 
     // Declare the full list of center frequencies for General Parametric
     // Filters.
-    @SuppressWarnings("nls") public static final String[] CENTER_FREQUENCIES = {
-                                                                                 "32",
-                                                                                 "63",
-                                                                                 "125",
-                                                                                 "250",
-                                                                                 "500",
-                                                                                 "1000",
-                                                                                 "2000",
-                                                                                 "4000",
-                                                                                 "8000",
-                                                                                 "16000" };
+    @SuppressWarnings( "nls" )
+    public static final String[] CENTER_FREQUENCIES = {
+            "32",
+            "63",
+            "125",
+            "250",
+            "500",
+            "1000",
+            "2000",
+            "4000",
+            "8000",
+            "16000"
+    };
 
     // This is the default constructor; it sets all instance variables to
     // default values.
@@ -60,12 +62,6 @@ public final class GeneralParametricFilters extends ParametricFilters {
     // default values, but sets a supplied bypassed status in advance.
     public GeneralParametricFilters( final boolean generalParametricFiltersBypassed ) {
         this( generalParametricFiltersBypassed, null, CENTER_FREQUENCIES );
-    }
-
-    // This is the fully qualified constructor.
-    public GeneralParametricFilters( final boolean generalParametricFiltersBypassed,
-                                     final ParametricFilter[] parametricFilters ) {
-        this( generalParametricFiltersBypassed, parametricFilters, null );
     }
 
     // This is the superset constructor, to allow a common initialization path.
@@ -84,6 +80,12 @@ public final class GeneralParametricFilters extends ParametricFilters {
               generalParametricFilters.getParametricFilters() );
     }
 
+    // This is the fully qualified constructor.
+    public GeneralParametricFilters( final boolean generalParametricFiltersBypassed,
+                                     final ParametricFilter[] parametricFilters ) {
+        this( generalParametricFiltersBypassed, parametricFilters, null );
+    }
+
     // Default pseudo-constructor.
     public void reset() {
         setDefaults( NUMBER_OF_FILTERS, CENTER_FREQUENCIES );
@@ -94,9 +96,11 @@ public final class GeneralParametricFilters extends ParametricFilters {
      * Filters, for when they're not in use, to avoid class-switching.
      */
     public void resetUpperParametricFilters() {
-        for ( int filterIndex = 5; filterIndex < NUMBER_OF_FILTERS; filterIndex++ ) {
-            _parametricFilters[ filterIndex ] = new ParametricFilter( NumberUtilities
-                    .parseDouble( CENTER_FREQUENCIES[ filterIndex ] ) );
+        for ( int filterIndex = 5;
+              filterIndex < NUMBER_OF_FILTERS;
+              filterIndex++ ) {
+            _parametricFilters[ filterIndex ] = new ParametricFilter(
+                    NumberUtilities.parseDouble( CENTER_FREQUENCIES[ filterIndex ] ) );
         }
     }
 

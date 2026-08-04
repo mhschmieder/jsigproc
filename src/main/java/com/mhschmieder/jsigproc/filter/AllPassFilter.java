@@ -45,19 +45,19 @@ public final class AllPassFilter extends DigitalFilter {
     protected static final boolean BYPASSED_DEFAULT = true;
 
     // Center frequency, range 20Hz to 20000Hz
-    protected static final double  F_DEFAULT        = 100d;
+    protected static final double F_DEFAULT = 100d;
 
     // Bandwidth, range 1.1 to 0.1 octave
-    private static final double    O_DEFAULT        = 1.0d;
+    private static final double O_DEFAULT = 1.0d;
 
-    private boolean                _bypassed;
-    private double                 _f;
-    private double                 _o;
+    private boolean _bypassed;
+    private double _f;
+    private double _o;
 
     // Declare equation domain parameters (computed from f/o, not
     // user-specified).
-    private Complex                _w;
-    private Complex                _q;
+    private Complex _w;
+    private Complex _q;
 
     // This is the generic default constructor for a single filter; it sets all
     // instance variables to default values.
@@ -72,7 +72,9 @@ public final class AllPassFilter extends DigitalFilter {
     }
 
     // This is the preferred constructor, when all initial values are known.
-    public AllPassFilter( final boolean allPassBypassed, final double f, final double o ) {
+    public AllPassFilter( final boolean allPassBypassed,
+                          final double f,
+                          final double o ) {
         _bypassed = allPassBypassed;
         _f = f;
         _o = o;
@@ -81,7 +83,10 @@ public final class AllPassFilter extends DigitalFilter {
         // TODO: Find out why the opposite convention is used here for which
         //  part is real and which part is imaginary vs.
         //  convertFrequencyToSDomain()
-        _w = new Complex( FrequencySignalUtilities.getAngularFrequencyRadians( f ), 0.0d );
+        _w
+                =
+                new Complex( FrequencySignalUtilities.getAngularFrequencyRadians(
+                f ), 0.0d );
         _q = new Complex( o, 0.0d );
     }
 
@@ -89,10 +94,45 @@ public final class AllPassFilter extends DigitalFilter {
     //  to guarantee that the source object is never modified by the new target
     //  object created here.
     public AllPassFilter( final AllPassFilter allPassFilter ) {
-        this(
-                allPassFilter.isBypassed(),
-                allPassFilter.getF(),
-                allPassFilter.getO() );
+        this( allPassFilter.isBypassed(),
+              allPassFilter.getF(),
+              allPassFilter.getO() );
+    }
+
+    public double getF() {
+        return _f;
+    }
+
+    public void setF( final double f ) {
+        // Set the center frequency and simultaneously compute the associated
+        // equation domain parameter "W" (for tight loop efficiency).
+        // TODO: Find out why the opposite convention is used here for which
+        //  part is real and which part is imaginary vs.
+        //  convertFrequencyToSDomain()
+        _f = f;
+        _w
+                =
+                new Complex( FrequencySignalUtilities.getAngularFrequencyRadians(
+                f ), 0.0d );
+    }
+
+    public double getO() {
+        return _o;
+    }
+
+    public void setO( final double o ) {
+        // Set the octaves and simultaneously compute the associated equation
+        // domain parameter "Q" (for tight loop efficiency).
+        _o = o;
+        _q = new Complex( o, 0.0d );
+    }
+
+    public boolean isBypassed() {
+        return _bypassed;
+    }
+
+    public void setBypassed( final boolean allPassBypassed ) {
+        _bypassed = allPassBypassed;
     }
 
     // NOTE: Cloning is disabled as it is dangerous; use the copy constructor
@@ -100,10 +140,6 @@ public final class AllPassFilter extends DigitalFilter {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
-    }
-
-    public double getF() {
-        return _f;
     }
 
     // This instance method returns the All Pass Filter value at a given
@@ -116,7 +152,7 @@ public final class AllPassFilter extends DigitalFilter {
 
         // The sampling frequency should be set in advance to match exactly what
         // is done in any hardware or software that uses this filter algorithm.
-        // The pre-warping affects the linearity of high frequencies so we must 
+        // The pre-warping affects the linearity of high frequencies so we must
         // respect the set sampling frequency.
         //
         // The sampling frequency of the filter is independent of the other
@@ -127,8 +163,9 @@ public final class AllPassFilter extends DigitalFilter {
         // If f == 0 we have divisions by 0 and therefore NaNs. Avoid it.
         final double fAdjusted = FastMath.max( f, MathConstants.EPSILON_SMALL );
 
-        final Complex z = DigitalFilterUtilities
-                .convertFrequencyToZDomain( fAdjusted, samplingFrequencyHz );
+        final Complex z = DigitalFilterUtilities.convertFrequencyToZDomain(
+                fAdjusted,
+                samplingFrequencyHz );
         final Complex zSquared = MathUtilities.sqrComplex( z );
 
         // Get the complex frequency variable in the s-plane.
@@ -136,8 +173,9 @@ public final class AllPassFilter extends DigitalFilter {
                 fAdjusted );
 
         // Theta is the angle to the pole (radians), in the z-plane.
-        final double theta = DigitalFilterUtilities
-                .getPoleAngleRadians( fAdjusted, samplingFrequencyHz );
+        final double theta = DigitalFilterUtilities.getPoleAngleRadians(
+                fAdjusted,
+                samplingFrequencyHz );
 
         final double Q = _q.getReal();
         final double W = _w.getReal();
@@ -156,7 +194,9 @@ public final class AllPassFilter extends DigitalFilter {
         final double BA = B / A;
 
         final Complex denominator = zSquared.add( z.multiply( CA ) ).add( BA );
-        final Complex numerator = zSquared.multiply( BA ).add( z.multiply( CA ) ).add( 1.0d );
+        final Complex numerator = zSquared.multiply( BA )
+                                          .add( z.multiply( CA ) )
+                                          .add( 1.0d );
 
         // NOTE: Avoid divide by zero exceptions!
         if ( Complex.ZERO.equals( denominator ) ) {
@@ -172,21 +212,13 @@ public final class AllPassFilter extends DigitalFilter {
         return h.conjugate();
     }
 
-    public double getO() {
-        return _o;
-    }
-
     public boolean isActiveEqMode() {
         // All pass is phase-only, so there are no gain settings; we only care
         // if the filter is bypassed or not.
         return !_bypassed;
     }
 
-    public boolean isBypassed() {
-        return _bypassed;
-    }
-
-    @SuppressWarnings("static-method")
+    @SuppressWarnings( "static-method" )
     public boolean isEqBoostMode() {
         // All Pass is phase-only, so there are no gain settings.
         return false;
@@ -195,11 +227,12 @@ public final class AllPassFilter extends DigitalFilter {
     // This method detects whether any of the filter parameters have been
     // altered from their default state.
     // NOTE: Most uses of All Pass Filters will result in an initially
-    //  constructed filter already being at non-default state, so maybe we should
+    //  constructed filter already being at non-default state, so maybe we
+    //  should
     //  compare against initial state?
     public boolean isNonDefaultEqMode() {
         return ( isBypassed() != BYPASSED_DEFAULT ) || ( getF() != F_DEFAULT )
-                || ( getO() != O_DEFAULT );
+               || ( getO() != O_DEFAULT );
     }
 
     // Default pseudo-constructor
@@ -207,37 +240,19 @@ public final class AllPassFilter extends DigitalFilter {
         setAllPassFilter( BYPASSED_DEFAULT, F_DEFAULT, O_DEFAULT );
     }
 
-    // Pseudo-copy constructor
-    public void setAllPassFilter( final AllPassFilter allPassFilter ) {
-        setAllPassFilter( allPassFilter.isBypassed(), allPassFilter.getF(), allPassFilter.getO() );
-    }
-
     // Fully qualified pseudo-constructor
-    public void setAllPassFilter( final boolean allPassBypassed, final double f, final double o ) {
+    public void setAllPassFilter( final boolean allPassBypassed,
+                                  final double f,
+                                  final double o ) {
         setBypassed( allPassBypassed );
         setF( f );
         setO( o );
     }
 
-    public void setBypassed( final boolean allPassBypassed ) {
-        _bypassed = allPassBypassed;
-    }
-
-    public void setF( final double f ) {
-        // Set the center frequency and simultaneously compute the associated
-        // equation domain parameter "W" (for tight loop efficiency).
-        // TODO: Find out why the opposite convention is used here for which
-        //  part is real and which part is imaginary vs.
-        //  convertFrequencyToSDomain()
-        _f = f;
-        _w = new Complex( FrequencySignalUtilities
-                .getAngularFrequencyRadians( f ), 0.0d );
-    }
-
-    public void setO( final double o ) {
-        // Set the octaves and simultaneously compute the associated equation
-        // domain parameter "Q" (for tight loop efficiency).
-        _o = o;
-        _q = new Complex( o, 0.0d );
+    // Pseudo-copy constructor
+    public void setAllPassFilter( final AllPassFilter allPassFilter ) {
+        setAllPassFilter( allPassFilter.isBypassed(),
+                          allPassFilter.getF(),
+                          allPassFilter.getO() );
     }
 }

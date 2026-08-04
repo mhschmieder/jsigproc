@@ -63,138 +63,158 @@ public enum HighLowPassFilterType {
     LINKWITZ_RILEY_2_LOW_PASS,
     LINKWITZ_RILEY_4_LOW_PASS;
 
-    public static HighLowPassFilterType defaultValue() {
-        return LOW_PASS;
-    }
-
     public static HighLowPassFilterType presentationValueOf( final String highLowPassFilterType,
                                                              final boolean highPass ) {
         // Cover legacy cases, as we changed terminology at some point.
         if ( highLowPassFilterType == null ) {
             return defaultValue();
         }
-        else if ( "2nd order high pass"
-                .equalsIgnoreCase( highLowPassFilterType )
+        else if (
+                "2nd order high pass".equalsIgnoreCase( highLowPassFilterType )
                 || "highpass".equalsIgnoreCase( highLowPassFilterType ) ) {
             return SECOND_ORDER_HIGH_PASS;
         }
-        else if ( "elliptical high pass"
-                .equalsIgnoreCase( highLowPassFilterType )
-                || "ellipticalhighpass"
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
+        else if (
+                "elliptical high pass".equalsIgnoreCase( highLowPassFilterType )
+                || "ellipticalhighpass".equalsIgnoreCase( highLowPassFilterType ) ) {
             return ELLIPTICAL_HIGH_PASS;
         }
         else if ( "low pass".equalsIgnoreCase( highLowPassFilterType )
-                || "lowpass".equalsIgnoreCase( highLowPassFilterType ) ) {
+                  || "lowpass".equalsIgnoreCase( highLowPassFilterType ) ) {
             return LOW_PASS;
         }
         else if ( ( "Butterworth 6"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_1_HIGH_PASS : BUTTERWORTH_1_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_1_HIGH_PASS
+                   : BUTTERWORTH_1_LOW_PASS;
         }
         else if ( ( "Butterworth 12"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_2_HIGH_PASS : BUTTERWORTH_2_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_2_HIGH_PASS
+                   : BUTTERWORTH_2_LOW_PASS;
         }
         else if ( ( "Butterworth 18"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_3_HIGH_PASS : BUTTERWORTH_3_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_3_HIGH_PASS
+                   : BUTTERWORTH_3_LOW_PASS;
         }
         else if ( ( "Butterworth 24"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_4_HIGH_PASS : BUTTERWORTH_4_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_4_HIGH_PASS
+                   : BUTTERWORTH_4_LOW_PASS;
         }
         else if ( ( "Butterworth 30"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_5_HIGH_PASS : BUTTERWORTH_5_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_5_HIGH_PASS
+                   : BUTTERWORTH_5_LOW_PASS;
         }
         else if ( ( "Butterworth 36"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_6_HIGH_PASS : BUTTERWORTH_6_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_6_HIGH_PASS
+                   : BUTTERWORTH_6_LOW_PASS;
         }
         else if ( ( "Butterworth 42"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_7_HIGH_PASS : BUTTERWORTH_7_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_7_HIGH_PASS
+                   : BUTTERWORTH_7_LOW_PASS;
         }
         else if ( ( "Butterworth 48"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? BUTTERWORTH_8_HIGH_PASS : BUTTERWORTH_8_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? BUTTERWORTH_8_HIGH_PASS
+                   : BUTTERWORTH_8_LOW_PASS;
         }
         else if ( ( "Linkwitz-Riley 12"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? LINKWITZ_RILEY_2_HIGH_PASS : LINKWITZ_RILEY_2_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? LINKWITZ_RILEY_2_HIGH_PASS
+                   : LINKWITZ_RILEY_2_LOW_PASS;
         }
         else if ( ( "Linkwitz-Riley 24"
-                + DigitalFilterUtilities.FILTER_SLOPE_UNITS )
-                        .equalsIgnoreCase( highLowPassFilterType ) ) {
-            return highPass ? LINKWITZ_RILEY_4_HIGH_PASS : LINKWITZ_RILEY_4_LOW_PASS;
+                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS ).equalsIgnoreCase(
+                highLowPassFilterType ) ) {
+            return highPass
+                   ? LINKWITZ_RILEY_4_HIGH_PASS
+                   : LINKWITZ_RILEY_4_LOW_PASS;
         }
         else {
             return valueOf( highLowPassFilterType.toUpperCase( Locale.ENGLISH ) );
         }
     }
 
+    public static HighLowPassFilterType defaultValue() {
+        return LOW_PASS;
+    }
+
     public final String toPresentationString() {
         switch ( this ) {
-        case SECOND_ORDER_HIGH_PASS:
-            return "2nd Order High Pass";
-        case ELLIPTICAL_HIGH_PASS:
-            return "Elliptical High Pass";
-        case LOW_PASS:
-            return "Low Pass";
-        case BUTTERWORTH_1_LOW_PASS:
-        case BUTTERWORTH_1_HIGH_PASS:
-            return "Butterworth 6"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case BUTTERWORTH_2_LOW_PASS:
-        case BUTTERWORTH_2_HIGH_PASS:
-            return "Butterworth 12"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case BUTTERWORTH_3_LOW_PASS:
-        case BUTTERWORTH_3_HIGH_PASS:
-            return "Butterworth 18"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case BUTTERWORTH_4_LOW_PASS:
-        case BUTTERWORTH_4_HIGH_PASS:
-            return "Butterworth 24"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case BUTTERWORTH_5_LOW_PASS:
-        case BUTTERWORTH_5_HIGH_PASS:
-            return "Butterworth 30"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case BUTTERWORTH_6_LOW_PASS:
-        case BUTTERWORTH_6_HIGH_PASS:
-            return "Butterworth 36"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case BUTTERWORTH_7_LOW_PASS:
-        case BUTTERWORTH_7_HIGH_PASS:
-            return "Butterworth 42"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case BUTTERWORTH_8_LOW_PASS:
-        case BUTTERWORTH_8_HIGH_PASS:
-            return "Butterworth 48"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case LINKWITZ_RILEY_2_LOW_PASS:
-        case LINKWITZ_RILEY_2_HIGH_PASS:
-            return "Linkwitz-Riley 12"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        case LINKWITZ_RILEY_4_LOW_PASS:
-        case LINKWITZ_RILEY_4_HIGH_PASS:
-            return "Linkwitz-Riley 24"
-                    + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
-        default:
-            final String errMessage = "Unexpected "
-                    + this.getClass().getSimpleName() + " " + this;
-            throw new IllegalArgumentException( errMessage );
+            case SECOND_ORDER_HIGH_PASS:
+                return "2nd Order High Pass";
+            case ELLIPTICAL_HIGH_PASS:
+                return "Elliptical High Pass";
+            case LOW_PASS:
+                return "Low Pass";
+            case BUTTERWORTH_1_LOW_PASS:
+            case BUTTERWORTH_1_HIGH_PASS:
+                return "Butterworth 6"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case BUTTERWORTH_2_LOW_PASS:
+            case BUTTERWORTH_2_HIGH_PASS:
+                return "Butterworth 12"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case BUTTERWORTH_3_LOW_PASS:
+            case BUTTERWORTH_3_HIGH_PASS:
+                return "Butterworth 18"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case BUTTERWORTH_4_LOW_PASS:
+            case BUTTERWORTH_4_HIGH_PASS:
+                return "Butterworth 24"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case BUTTERWORTH_5_LOW_PASS:
+            case BUTTERWORTH_5_HIGH_PASS:
+                return "Butterworth 30"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case BUTTERWORTH_6_LOW_PASS:
+            case BUTTERWORTH_6_HIGH_PASS:
+                return "Butterworth 36"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case BUTTERWORTH_7_LOW_PASS:
+            case BUTTERWORTH_7_HIGH_PASS:
+                return "Butterworth 42"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case BUTTERWORTH_8_LOW_PASS:
+            case BUTTERWORTH_8_HIGH_PASS:
+                return "Butterworth 48"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case LINKWITZ_RILEY_2_LOW_PASS:
+            case LINKWITZ_RILEY_2_HIGH_PASS:
+                return "Linkwitz-Riley 12"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            case LINKWITZ_RILEY_4_LOW_PASS:
+            case LINKWITZ_RILEY_4_HIGH_PASS:
+                return "Linkwitz-Riley 24"
+                       + DigitalFilterUtilities.FILTER_SLOPE_UNITS;
+            default:
+                final String errMessage = "Unexpected " + this.getClass()
+                                                              .getSimpleName()
+                                          + " " + this;
+                throw new IllegalArgumentException( errMessage );
         }
     }
 

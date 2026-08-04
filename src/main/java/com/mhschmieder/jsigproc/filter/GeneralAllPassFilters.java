@@ -32,14 +32,15 @@ package com.mhschmieder.jsigproc.filter;
 
 public final class GeneralAllPassFilters extends AllPassFilters {
 
-    public static final int      NUMBER_OF_FILTERS  = 3;
+    public static final int NUMBER_OF_FILTERS = 3;
 
     // Declare the full list of center frequencies for General All Pass Filters.
     public static final String[] CENTER_FREQUENCIES = {
-                                                        "32",               //$NON-NLS-1$
-                                                        "64",               //$NON-NLS-1$
-                                                        "128",              //$NON-NLS-1$
-                                                        "256" };            //$NON-NLS-1$
+            "32",               //$NON-NLS-1$
+            "64",               //$NON-NLS-1$
+            "128",              //$NON-NLS-1$
+            "256"
+    };            //$NON-NLS-1$
 
     // This is the default constructor; it sets all instance variables to
     // default values.

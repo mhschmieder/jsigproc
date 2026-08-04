@@ -31,17 +31,20 @@
 package com.mhschmieder.jsigproc.dsp;
 
 public class DspConstants {
-    
+
     /**
-     * Default sampling frequency for initializing to a likely real world value.
+     * Default sampling frequency for initializing to a likely real world
+     * value.
      * <p>
-     * Many digital filter algorithms are based on ratios of sampling frequency.
+     * Many digital filter algorithms are based on ratios of sampling
+     * frequency.
      */
     public static final double DEFAULT_SAMPLING_FREQUENCY_HZ = 96000.0d;
 
     /**
-     * The default constructor is disabled, as this is a static constants class.
+     * The default constructor is disabled, as this is a static constants
+     * class.
      */
-    public DspConstants() {}
-
+    public DspConstants() {
+    }
 }
