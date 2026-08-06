@@ -69,14 +69,13 @@ public enum HighLowPassFilterType {
         if ( highLowPassFilterType == null ) {
             return defaultValue();
         }
-        else if (
-                "2nd order high pass".equalsIgnoreCase( highLowPassFilterType )
-                || "highpass".equalsIgnoreCase( highLowPassFilterType ) ) {
+        else if ( "2nd order high pass".equalsIgnoreCase( highLowPassFilterType )
+                  || "highpass".equalsIgnoreCase( highLowPassFilterType ) ) {
             return SECOND_ORDER_HIGH_PASS;
         }
-        else if (
-                "elliptical high pass".equalsIgnoreCase( highLowPassFilterType )
-                || "ellipticalhighpass".equalsIgnoreCase( highLowPassFilterType ) ) {
+        else if ( "elliptical high pass".equalsIgnoreCase( highLowPassFilterType )
+                  || "ellipticalhighpass".equalsIgnoreCase(
+                highLowPassFilterType ) ) {
             return ELLIPTICAL_HIGH_PASS;
         }
         else if ( "low pass".equalsIgnoreCase( highLowPassFilterType )
